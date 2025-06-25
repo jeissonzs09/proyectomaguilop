@@ -8,6 +8,8 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\PermisoController;
 
+
+
 Route::middleware(['auth'])->group(function () {
     Route::resource('usuarios', UsuarioController::class);
 });
@@ -67,6 +69,21 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/permisos', [PermisoController::class, 'index'])->name('permisos.index');
 });
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/roles', [RolController::class, 'index'])->name('roles.index');
+    Route::get('/roles/create', [RolController::class, 'create'])->name('roles.create');
+    Route::post('/roles', [RolController::class, 'store'])->name('roles.store');
+    Route::get('/roles/{id}/edit', [RolController::class, 'edit'])->name('roles.edit');
+    Route::put('/roles/{id}', [RolController::class, 'update'])->name('roles.update');
+    Route::delete('/roles/{id}', [RolController::class, 'destroy'])->name('roles.destroy');
+});
+
+Route::resource('permisos', PermisoController::class);
+
+Route::get('/roles/{id}/permisos', [RolController::class, 'editPermisos'])->name('roles.permisos.edit');
+Route::put('/roles/{id}/permisos', [RolController::class, 'updatePermisos'])->name('roles.permisos.update');
+
 
 
 

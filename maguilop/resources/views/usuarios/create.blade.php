@@ -30,6 +30,15 @@
 
             </div>
 
+            
+            {{-- Correo Electronico --}}
+            <div class="mb-4">
+                <label class="block text-sm font-medium">Correo Electronico</label>
+                <input type="email" name="correo" required class="mt-1 block w-full rounded border-gray-300 shadow-sm" />
+                @error('CorreoElectronico')
+    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+@enderror
+
             {{-- Contraseña --}}
             <div class="mb-4">
                 <label class="block text-sm font-medium">Contraseña</label>
@@ -40,6 +49,7 @@
         <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
     @enderror
             </div>
+
 
             <div class="mb-4">
     <label for="EmpleadoID" class="block text-sm font-medium text-gray-700">Empleado</label>
@@ -54,10 +64,15 @@
 
             {{-- Botones --}}
             <div class="flex justify-between mt-6">
-                <a href="{{ route('usuarios.index') }}" class="text-sm text-gray-600 hover:underline">← Cancelar</a>
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-black px-4 py-2 rounded">
-                    Guardar Usuario
-                </button>
+                <a href="{{ route('usuarios.index') }}"
+   style="background-color: #dc2626; color: white; font-weight: bold; padding: 10px 20px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); text-decoration: none;">
+   ❌ Cancelar
+</a>
+<button type="submit"
+    style="background-color: #2563eb; color: white; font-weight: bold; padding: 10px 20px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); border: none;">
+    💾 Guardar usuario
+</button>
+
             </div>
         </form>
     </div>

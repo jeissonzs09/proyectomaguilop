@@ -4,14 +4,24 @@
     </x-slot>
 
     <div class="p-4">
-        <a href="{{ route('usuarios.create') }}" class="bg-blue-600 text-black px-4 py-2 rounded">+ Nuevo usuario</a>
+<a href="{{ route('usuarios.create') }}"
+   style="background-color: #2563eb; color: white; padding: 8px 16px; border-radius: 0.5rem; display: inline-flex; align-items: center; gap: 8px; font-weight: bold;">
+    ➕ Nuevo usuario
+</a>
+
+
+
+
+
 <table class="table-auto w-full mt-4 border rounded-lg shadow">
     <thead class="bg-gray-100 text-gray-700">
         <tr>
-            <th class="border px-4 py-2">ID</th>
-            <th class="border px-4 py-2">Usuario</th>
-            <th class="border px-4 py-2">Rol</th>
+            <th class="border px-4 py-2 text-center">ID</th>
+            <th class="border px-4 py-2 text-center">Usuario</th>
+            <th class="border px-4 py-2 text-center">Rol</th>
+            <th class="border px-4 py-2 text-center">Correo</th>
             <th class="border px-4 py-2 text-center">Acciones</th>
+
         </tr>
     </thead>
     <tbody>
@@ -20,6 +30,7 @@
             <td class="border px-4 py-2">{{ $usuario->UsuarioID }}</td>
             <td class="border px-4 py-2">{{ $usuario->NombreUsuario }}</td>
             <td class="border px-4 py-2">{{ $usuario->TipoUsuario }}</td>
+            <td class="border px-4 py-2">{{ $usuario->CorreoElectronico}}</td>
 <td class="px-4 py-2 text-center space-x-2">
     <a href="{{ route('usuarios.edit', $usuario->UsuarioID) }}"
        class="inline-flex items-center justify-center bg-red-500 hover:bg-blue-600 text-white p-2 rounded-full transition duration-200"
