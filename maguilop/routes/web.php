@@ -10,6 +10,7 @@ use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\RolPermisoModuloController;
 use App\Helpers\PermisosHelper;
 use App\Http\Controllers\ReparacionController;
+use App\Http\Controllers\ProductoController;
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('usuarios', UsuarioController::class);
@@ -89,6 +90,8 @@ Route::get('/roles/permisos', [RolPermisoModuloController::class, 'index'])->nam
 Route::post('/roles/permisos/guardar', [RolPermisoModuloController::class, 'guardar'])->name('roles.permisos.guardar');
 
 Route::resource('reparaciones', ReparacionController::class);
+
+Route::resource('producto', ProductoController::class);
 
 require __DIR__.'/auth.php';
 

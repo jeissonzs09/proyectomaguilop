@@ -62,7 +62,7 @@
             </div>
 
             <div class="mt-6 text-end">
-                <a href="{{ route('usuarios.index') }}"
+                <a href="{{ route('reparaciones.index') }}"
                    style="background-color: #dc2626; color: white; font-weight: bold; padding: 10px 20px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
                    ❌ Cancelar
                 </a>

@@ -58,7 +58,7 @@
             </a>
             @endif
 
-@if(PermisosHelper::tienePermiso('Permisos por Rol', 'ver'))
+@if(PermisosHelper::tienePermiso('Roles', 'ver'))
             <a href="{{ route('roles.index') }}"
                style="display: flex; align-items: center; gap: 10px; padding: 10px 35px; color: white; text-decoration: none;"
                onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
@@ -89,6 +89,17 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232a3 3 0 014.243 4.243L10.5 18.5 6 19l.5-4.5 8.732-8.768z" />
         </svg>
         Reparaciones
+    </a>
+    @endif
+
+        @if(PermisosHelper::tienePermiso('Productos', 'ver'))
+        <a href="{{ route('producto.index') }}"
+       style="display: flex; align-items: center; gap: 10px; padding: 10px 35px; color: white; text-decoration: none;"
+       onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
+        <svg xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 7l3 14h12l3-14M12 3v4" />
+        </svg>
+        Productos
     </a>
     @endif
 
