@@ -7,8 +7,9 @@ use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\PermisoController;
-
-
+use App\Http\Controllers\RolPermisoModuloController;
+use App\Helpers\PermisosHelper;
+use App\Http\Controllers\ReparacionController;
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('usuarios', UsuarioController::class);
@@ -84,8 +85,10 @@ Route::resource('permisos', PermisoController::class);
 Route::get('/roles/{id}/permisos', [RolController::class, 'editPermisos'])->name('roles.permisos.edit');
 Route::put('/roles/{id}/permisos', [RolController::class, 'updatePermisos'])->name('roles.permisos.update');
 
+Route::get('/roles/permisos', [RolPermisoModuloController::class, 'index'])->name('roles.permisos');
+Route::post('/roles/permisos/guardar', [RolPermisoModuloController::class, 'guardar'])->name('roles.permisos.guardar');
 
-
+Route::resource('reparaciones', ReparacionController::class);
 
 require __DIR__.'/auth.php';
 

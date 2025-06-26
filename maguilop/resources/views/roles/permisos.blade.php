@@ -1,38 +1,88 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-bold">🔐 Asignar Permisos al Rol: {{ $rol->Descripcion }}</h2>
+        <h2 class="text-xl font-bold">🛡️ Asignación de Permisos por Rol y Módulo</h2>
     </x-slot>
 
-    <div class="max-w-3xl mx-auto mt-6 bg-white p-6 rounded shadow">
-        <form action="{{ route('roles.permisos.update', $rol->ID_Rol) }}" method="POST">
-            @csrf
-            @method('PUT')
+    <div class="container mt-4">
+        @if(session('success'))
+            <div style="background-color: #d1e7dd; color: #0f5132; padding: 12px; border-radius: 6px; margin-bottom: 16px;">
+                {{ session('success') }}
+            </div>
+        @endif
 
-            <div class="mb-4">
-                <h3 class="text-lg font-semibold mb-2">Permisos disponibles:</h3>
-                <div class="grid grid-cols-2 gap-2">
-                    @foreach ($permisos as $permiso)
-                        <label class="flex items-center space-x-2">
-                            <input type="checkbox"
-                                   name="permisos[]"
-                                   value="{{ $permiso->PermisoID }}"
-                                   {{ in_array($permiso->PermisoID, $permisosAsignados) ? 'checked' : '' }}>
-                            <span>{{ $permiso->NombrePermiso }}</span>
-                        </label>
-                    @endforeach
-                </div>
+        <form method="POST" action="{{ route('roles.permisos.guardar') }}">
+            @csrf
+
+            <div class="overflow-x-auto">
+                <table class="table-auto w-full bg-white border shadow-sm">
+                    <thead style="background-color: #ef6c00; color: white;">
+                        <tr>
+                            <th class="px-4 py-2">Módulo</th>
+                            @foreach ($roles as $rol)
+                                <th colspan="4" class="text-center px-2">{{ $rol->Descripcion }}</th>
+                            @endforeach
+                        </tr>
+                        <tr>
+                            <th></th>
+                            @foreach ($roles as $rol)
+                                <th class="text-center">Ver</th>
+                                <th class="text-center">Crear</th>
+                                <th class="text-center">Editar</th>
+                                <th class="text-center">Eliminar</th>
+                            @endforeach
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($modulos as $modulo)
+                            <tr class="hover:bg-gray-50">
+                                <td class="border px-4 py-2 font-semibold">{{ $modulo }}</td>
+                                @foreach ($roles as $rol)
+                                    @php
+                                        $permiso = $permisos[$rol->ID_Rol][$modulo] ?? ['ver' => 0, 'crear' => 0, 'editar' => 0, 'eliminar' => 0];
+                                    @endphp
+
+                                    {{-- VER --}}
+                                    <td class="border text-center">
+                                        <input type="hidden" name="permisos[{{ $rol->ID_Rol }}][{{ $modulo }}][ver]" value="0">
+                                        <input type="checkbox" name="permisos[{{ $rol->ID_Rol }}][{{ $modulo }}][ver]" value="1"
+                                            {{ $permiso['ver'] ? 'checked' : '' }}>
+                                    </td>
+
+                                    {{-- CREAR --}}
+                                    <td class="border text-center">
+                                        <input type="hidden" name="permisos[{{ $rol->ID_Rol }}][{{ $modulo }}][crear]" value="0">
+                                        <input type="checkbox" name="permisos[{{ $rol->ID_Rol }}][{{ $modulo }}][crear]" value="1"
+                                            {{ $permiso['crear'] ? 'checked' : '' }}>
+                                    </td>
+
+                                    {{-- EDITAR --}}
+                                    <td class="border text-center">
+                                        <input type="hidden" name="permisos[{{ $rol->ID_Rol }}][{{ $modulo }}][editar]" value="0">
+                                        <input type="checkbox" name="permisos[{{ $rol->ID_Rol }}][{{ $modulo }}][editar]" value="1"
+                                            {{ $permiso['editar'] ? 'checked' : '' }}>
+                                    </td>
+
+                                    {{-- ELIMINAR --}}
+                                    <td class="border text-center">
+                                        <input type="hidden" name="permisos[{{ $rol->ID_Rol }}][{{ $modulo }}][eliminar]" value="0">
+                                        <input type="checkbox" name="permisos[{{ $rol->ID_Rol }}][{{ $modulo }}][eliminar]" value="1"
+                                            {{ $permiso['eliminar'] ? 'checked' : '' }}>
+                                    </td>
+                                @endforeach
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
 
-            <div class="flex justify-between mt-6">
-                <a href="{{ route('roles.index') }}"
-                   style="background-color: #dc2626; color: white; padding: 10px 20px; border-radius: 8px;">
-                    ← Cancelar
-                </a>
-                <button type="submit"
-                        style="background-color: #2563eb; color: white; padding: 10px 20px; border-radius: 8px;">
-                    💾 Guardar Permisos
+            <div class="mt-6 text-end">
+                <button type="submit" style="background-color: #198754; color: white; padding: 10px 20px; border-radius: 6px;">
+                    💾 Guardar Cambios
                 </button>
             </div>
         </form>
     </div>
 </x-app-layout>
+
+
+

@@ -9,6 +9,9 @@
 
 <body class="bg-gray-100 text-gray-800">
 
+@php use App\Helpers\PermisosHelper; @endphp
+
+
     <div class="flex min-h-screen">
 
         {{-- Sidebar --}}
@@ -44,6 +47,7 @@
             <span style="font-size: 16px;">▼</span>
         </div>
         <div id="submenu-seguridad" style="display: none;">
+            @if(PermisosHelper::tienePermiso('Usuarios', 'ver'))
             <a href="{{ route('usuarios.index') }}"
                style="display: flex; align-items: center; gap: 10px; padding: 10px 35px; color: white; text-decoration: none;"
                onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
@@ -52,6 +56,9 @@
                 </svg>
                 Usuarios
             </a>
+            @endif
+
+@if(PermisosHelper::tienePermiso('Permisos por Rol', 'ver'))
             <a href="{{ route('roles.index') }}"
                style="display: flex; align-items: center; gap: 10px; padding: 10px 35px; color: white; text-decoration: none;"
                onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
@@ -60,15 +67,31 @@
                 </svg>
                 Roles
             </a>
-            <a href="{{ route('permisos.index') }}"
-               style="display: flex; align-items: center; gap: 10px; padding: 10px 35px; color: white; text-decoration: none;"
-               onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
-                <svg xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Permisos
-            </a>
+    @endif
+
+@if(PermisosHelper::tienePermiso('Permisos por Rol', 'ver'))
+    <a href="{{ route('roles.permisos') }}"
+       style="display: flex; align-items: center; gap: 10px; padding: 10px 35px; color: white; text-decoration: none;"
+       onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
+        <svg xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a4 4 0 014-4h6M9 17v2a4 4 0 004 4h6m-10-6H5a2 2 0 01-2-2V5a2 2 0 012-2h10a2 2 0 012 2v6" />
+        </svg>
+        Permisos por Rol
+    </a>
+    @endif
         </div>
+
+    @if(PermisosHelper::tienePermiso('Reparaciones', 'ver'))
+    <a href="{{ route('reparaciones.index') }}"
+       style="display: flex; align-items: center; gap: 10px; padding: 10px 35px; color: white; text-decoration: none;"
+       onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
+        <svg xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232a3 3 0 014.243 4.243L10.5 18.5 6 19l.5-4.5 8.732-8.768z" />
+        </svg>
+        Reparaciones
+    </a>
+    @endif
+
     </nav>
 
     {{-- Script para toggle --}}

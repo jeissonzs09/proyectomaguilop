@@ -7,11 +7,16 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\Bitacora;
 use Illuminate\Support\Facades\Auth;
+use App\Helpers\PermisosHelper;
+
 
 class RolController extends Controller
 {
     public function index()
     {
+        if (!PermisosHelper::tienePermiso('Roles', 'ver')) {
+        abort(403, 'No tienes permiso para ver esta sección.');
+    }
         $roles = DB::table('tbl_roles')->get();
         return view('roles.index', compact('roles'));
     }
