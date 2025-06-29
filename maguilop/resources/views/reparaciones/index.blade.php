@@ -45,7 +45,9 @@
                             {{-- Editar --}}
                             @if($permisos::tienePermiso('Reparaciones', 'editar'))
                             <a href="{{ route('reparaciones.edit', $reparacion->ReparacionID) }}"
-                               class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full transition duration-200"
+                                style="display: inline-flex; align-items: center; justify-content: center; background-color:rgb(248, 245, 32); color: white; padding: 0.5rem; border-radius: 9999px; transition: background-color 0.2s ease;"
+                                onmouseover="this.style.backgroundColor='#1e40af'"
+                                onmouseout="this.style.backgroundColor='#2563eb'"
                                title="Editar">
                                 ✏️
                             </a>
