@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-bold">🛡️ Asignación de Permisos por Rol y Módulo</h2>
+        <h2 class="text-xl font-bold">Asignación de Permisos por Rol y Módulo</h2>
     </x-slot>
 
-    <div class="container mt-4">
+    <div class="p-4">
         @if(session('success'))
-            <div style="background-color: #d1e7dd; color: #0f5132; padding: 12px; border-radius: 6px; margin-bottom: 16px;">
+            <div class="bg-green-100 text-green-800 px-4 py-2 rounded-md mb-4 shadow">
                 {{ session('success') }}
             </div>
         @endif
@@ -14,24 +14,25 @@
             @csrf
 
             <div class="overflow-x-auto">
-                <table class="table-auto w-full bg-white border shadow-sm">
-                    <thead style="background-color: #ef6c00; color: white;">
-                        <tr>
-                            <th class="px-4 py-2">Módulo</th>
-                            @foreach ($roles as $rol)
-                                <th colspan="4" class="text-center px-2">{{ $rol->Descripcion }}</th>
-                            @endforeach
-                        </tr>
-                        <tr>
-                            <th></th>
-                            @foreach ($roles as $rol)
-                                <th class="text-center">Ver</th>
-                                <th class="text-center">Crear</th>
-                                <th class="text-center">Editar</th>
-                                <th class="text-center">Eliminar</th>
-                            @endforeach
-                        </tr>
-                    </thead>
+                <table class="table-auto w-full mt-4 border rounded-lg shadow text-sm">
+                    <thead class="bg-orange-600 text-white">
+    <tr>
+        <th class="border px-4 py-2 text-left">Módulo</th>
+        @foreach ($roles as $rol)
+            <th colspan="4" class="text-center border px-2 py-2">{{ $rol->Descripcion }}</th>
+        @endforeach
+    </tr>
+    <tr>
+        <th class="border px-4 py-2"></th>
+        @foreach ($roles as $rol)
+            <th class="border px-2 py-2 text-center">Ver</th>
+            <th class="border px-2 py-2 text-center">Crear</th>
+            <th class="border px-2 py-2 text-center">Editar</th>
+            <th class="border px-2 py-2 text-center">Eliminar</th>
+        @endforeach
+    </tr>
+</thead>
+
                     <tbody>
                         @foreach ($modulos as $modulo)
                             <tr class="hover:bg-gray-50">
@@ -41,33 +42,18 @@
                                         $permiso = $permisos[$rol->ID_Rol][$modulo] ?? ['ver' => 0, 'crear' => 0, 'editar' => 0, 'eliminar' => 0];
                                     @endphp
 
-                                    {{-- VER --}}
-                                    <td class="border text-center">
-                                        <input type="hidden" name="permisos[{{ $rol->ID_Rol }}][{{ $modulo }}][ver]" value="0">
-                                        <input type="checkbox" name="permisos[{{ $rol->ID_Rol }}][{{ $modulo }}][ver]" value="1"
-                                            {{ $permiso['ver'] ? 'checked' : '' }}>
-                                    </td>
-
-                                    {{-- CREAR --}}
-                                    <td class="border text-center">
-                                        <input type="hidden" name="permisos[{{ $rol->ID_Rol }}][{{ $modulo }}][crear]" value="0">
-                                        <input type="checkbox" name="permisos[{{ $rol->ID_Rol }}][{{ $modulo }}][crear]" value="1"
-                                            {{ $permiso['crear'] ? 'checked' : '' }}>
-                                    </td>
-
-                                    {{-- EDITAR --}}
-                                    <td class="border text-center">
-                                        <input type="hidden" name="permisos[{{ $rol->ID_Rol }}][{{ $modulo }}][editar]" value="0">
-                                        <input type="checkbox" name="permisos[{{ $rol->ID_Rol }}][{{ $modulo }}][editar]" value="1"
-                                            {{ $permiso['editar'] ? 'checked' : '' }}>
-                                    </td>
-
-                                    {{-- ELIMINAR --}}
-                                    <td class="border text-center">
-                                        <input type="hidden" name="permisos[{{ $rol->ID_Rol }}][{{ $modulo }}][eliminar]" value="0">
-                                        <input type="checkbox" name="permisos[{{ $rol->ID_Rol }}][{{ $modulo }}][eliminar]" value="1"
-                                            {{ $permiso['eliminar'] ? 'checked' : '' }}>
-                                    </td>
+                                    @foreach (['ver', 'crear', 'editar', 'eliminar'] as $accion)
+                                        <td class="border px-2 py-2 text-center">
+                                            <input type="hidden" name="permisos[{{ $rol->ID_Rol }}][{{ $modulo }}][{{ $accion }}]" value="0">
+                                            <input 
+                                                type="checkbox" 
+                                                name="permisos[{{ $rol->ID_Rol }}][{{ $modulo }}][{{ $accion }}]" 
+                                                value="1" 
+                                                {{ $permiso[$accion] ? 'checked' : '' }}
+                                                class="form-checkbox h-5 w-5 text-blue-600 rounded-full"
+                                            >
+                                        </td>
+                                    @endforeach
                                 @endforeach
                             </tr>
                         @endforeach
@@ -75,9 +61,9 @@
                 </table>
             </div>
 
-            <div class="mt-6 text-end">
-                <button type="submit" style="background-color: #198754; color: white; padding: 10px 20px; border-radius: 6px;">
-                    💾 Guardar Cambios
+            <div class="mt-6 text-right">
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-lg shadow transition">
+                    Guardar Cambios
                 </button>
             </div>
         </form>
