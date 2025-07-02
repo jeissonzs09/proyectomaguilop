@@ -1,7 +1,7 @@
 <x-guest-layout>
     <style>
         body {
-            background: url('{{ asset('images/fondo-maguilop.jpg') }}') no-repeat center center fixed;
+            background: url('{{ asset('images/maguilop-fondo.jpg') }}') no-repeat center center fixed;
             background-size: cover;
         }
     </style>
@@ -70,12 +70,6 @@
                     Iniciar Sesión
                 </button>
             </form>
-
-            <!-- Registro -->
-            <p class="text-center text-sm mt-6 opacity-80">
-                ¿No tienes cuenta?
-                <a href="{{ route('register') }}" class="underline">Regístrate</a>
-            </p>
         </div>
     </div>
 

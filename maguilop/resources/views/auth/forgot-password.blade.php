@@ -1,7 +1,7 @@
 <x-guest-layout>
     <style>
         body {
-            background: url('{{ asset('images/fondo-maguilop.jpg') }}') no-repeat center center fixed;
+            background: url('{{ asset('images/maguilop-fondo.jpg') }}') no-repeat center center fixed;
             background-size: cover;
         }
     </style>

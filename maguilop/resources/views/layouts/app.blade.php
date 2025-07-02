@@ -130,14 +130,6 @@
 
             @endif
 
-            @if(PermisosHelper::tienePermiso('Reporte', 'ver'))
-<a href="{{ route('reporte.index') }}" class="flex items-center space-x-2 px-3 py-2 rounded hover:bg-orange-600 transition">
-    <i class="fas fa-chart-bar w-4 h-4"></i>
-    <span>Reportes</span>
-</a>
-
-            @endif
-
             {{-- Gestión --}}
             <div x-data="{ open: false }">
                 <button @click="open = !open" class="flex items-center justify-between w-full px-3 py-2 rounded hover:bg-orange-600 transition">
