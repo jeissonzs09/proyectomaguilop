@@ -1,6 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-bold">👥 Usuarios</h2>
+        <h2 class="text-xl font-bold flex items-center gap-2">
+            <i class="fas fa-users"></i> Usuarios
+        </h2>
     </x-slot>
 
     @php
@@ -11,60 +13,63 @@
         {{-- Botón de crear usuario --}}
         @if($permisos::tienePermiso('Usuarios', 'crear'))
             <a href="{{ route('usuarios.create') }}"
-            style="background-color: #2563eb; color: white; padding: 8px 16px; border-radius: 0.5rem; display: inline-flex; align-items: center; gap: 8px; font-weight: bold;">
-                ➕ Nuevo usuario
+               class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow">
+                <i class="fas fa-user-plus"></i> Nuevo usuario
             </a>
         @endif
 
-        <table class="table-auto w-full mt-4 border rounded-lg shadow">
-            <thead class="bg-gray-100 text-gray-700">
-                <tr>
-                    <th class="border px-4 py-2 text-center">ID</th>
-                    <th class="border px-4 py-2 text-center">Usuario</th>
-                    <th class="border px-4 py-2 text-center">Rol</th>
-                    <th class="border px-4 py-2 text-center">Correo</th>
-                    <th class="border px-4 py-2 text-center">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($usuarios as $usuario)
-                    <tr class="hover:bg-gray-50">
-                        <td class="border px-4 py-2 text-center">{{ $usuario->UsuarioID }}</td>
-                        <td class="border px-4 py-2">{{ $usuario->NombreUsuario }}</td>
-                        <td class="border px-4 py-2">{{ $usuario->TipoUsuario }}</td>
-                        <td class="border px-4 py-2">{{ $usuario->CorreoElectronico }}</td>
-                        <td class="px-4 py-2 text-center space-x-2">
-                            {{-- Editar --}}
-                            @if($permisos::tienePermiso('Usuarios', 'editar'))
-                                <a href="{{ route('usuarios.edit', $usuario->UsuarioID) }}"
-                                style="display: inline-flex; align-items: center; justify-content: center; background-color:rgb(248, 245, 32); color: white; padding: 0.5rem; border-radius: 9999px; transition: background-color 0.2s ease;"
-                                onmouseover="this.style.backgroundColor='#1e40af'"
-                                onmouseout="this.style.backgroundColor='#2563eb'"
-                                   title="Editar">
-                                    ✏️
-                                </a>
-                            @endif
-
-                            {{-- Eliminar --}}
-                            @if($permisos::tienePermiso('Usuarios', 'eliminar'))
-                                <form action="{{ route('usuarios.destroy', $usuario->UsuarioID) }}" method="POST" class="inline-block">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                            onclick="return confirm('¿Estás seguro de eliminar este usuario?')"
-                                            class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white p-2 rounded-full transition duration-200"
-                                            title="Eliminar">
-                                        🗑️
-                                    </button>
-                                </form>
-                            @endif
-                        </td>
+        <div class="overflow-x-auto bg-white rounded-lg shadow mt-4">
+            <table class="min-w-full text-sm text-gray-800">
+                <thead class="bg-orange-500 text-white text-sm uppercase">
+                    <tr>
+                        <th class="px-4 py-3 text-left">ID</th>
+                        <th class="px-4 py-3 text-left">Usuario</th>
+                        <th class="px-4 py-3 text-left">Rol</th>
+                        <th class="px-4 py-3 text-left">Correo</th>
+                        <th class="px-4 py-3 text-center">Acciones</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    @foreach($usuarios as $usuario)
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-4 py-2">{{ $usuario->UsuarioID }}</td>
+                            <td class="px-4 py-2">{{ $usuario->NombreUsuario }}</td>
+                            <td class="px-4 py-2">{{ $usuario->TipoUsuario }}</td>
+                            <td class="px-4 py-2">{{ $usuario->CorreoElectronico }}</td>
+                            <td class="px-4 py-2 text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    {{-- Editar --}}
+                                    @if($permisos::tienePermiso('Usuarios', 'editar'))
+                                        <a href="{{ route('usuarios.edit', $usuario->UsuarioID) }}"
+                                           class="bg-yellow-400 hover:bg-yellow-500 text-white p-2 rounded-full"
+                                           title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    @endif
+
+                                    {{-- Eliminar --}}
+                                    @if($permisos::tienePermiso('Usuarios', 'eliminar'))
+                                        <form action="{{ route('usuarios.destroy', $usuario->UsuarioID) }}" method="POST"
+                                              onsubmit="return confirm('¿Estás seguro de eliminar este usuario?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full"
+                                                    title="Eliminar">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 </x-app-layout>
+
 
 
 

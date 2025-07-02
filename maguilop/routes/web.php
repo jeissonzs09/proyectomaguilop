@@ -11,6 +11,18 @@ use App\Http\Controllers\RolPermisoModuloController;
 use App\Helpers\PermisosHelper;
 use App\Http\Controllers\ReparacionController;
 use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\EmpleadoController;
+use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\CompraController;
+use App\Http\Controllers\DetalleCompraController;
+use App\Http\Controllers\VentaController;
+use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\DetallePedidoController;
+use App\Http\Controllers\BackupController;
+use App\Http\Controllers\BitacoraController;
+use App\Http\Controllers\FacturaController;
+use App\Http\Controllers\ReportesController;
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('usuarios', UsuarioController::class);
@@ -92,6 +104,73 @@ Route::post('/roles/permisos/guardar', [RolPermisoModuloController::class, 'guar
 Route::resource('reparaciones', ReparacionController::class);
 
 Route::resource('producto', ProductoController::class);
+
+Route::resource('empleados', EmpleadoController::class);
+
+Route::resource('clientes', ClienteController::class);
+
+Route::resource('proveedores', ProveedorController::class);
+
+Route::resource('compras', CompraController::class);
+
+Route::resource('detallecompras', DetalleCompraController::class);
+
+Route::resource('ventas', VentaController::class);
+
+Route::resource('pedidos', PedidoController::class);
+
+Route::resource('detalle_pedidos', DetallePedidoController::class);
+
+
+Route::put('pedido/{pedido}', [PedidoController::class, 'update'])->name('pedido.update');
+
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/backups', [BackupController::class, 'index'])->name('backups.index');
+    Route::get('/backups/create', [BackupController::class, 'create'])->name('backups.create');
+    Route::post('/backups', [BackupController::class, 'store'])->name('backups.store');
+    Route::get('/backups/{id}/edit', [BackupController::class, 'edit'])->name('backups.edit');
+    Route::put('/backups/{id}', [BackupController::class, 'update'])->name('backups.update');
+    Route::delete('/backups/{id}', [BackupController::class, 'destroy'])->name('backups.destroy');
+});
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/bitacoras', [BitacoraController::class, 'index'])->name('bitacoras.index');
+    Route::get('/bitacoras/create', [BitacoraController::class, 'create'])->name('bitacoras.create');
+    Route::post('/bitacoras', [BitacoraController::class, 'store'])->name('bitacoras.store');
+    Route::get('/bitacoras/{id}/edit', [BitacoraController::class, 'edit'])->name('bitacoras.edit');
+    Route::put('/bitacoras/{id}', [BitacoraController::class, 'update'])->name('bitacoras.update');
+    Route::delete('/bitacoras/{id}', [BitacoraController::class, 'destroy'])->name('bitacoras.destroy');
+});
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/facturas', [FacturaController::class, 'index'])->name('facturas.index');
+    Route::get('/facturas/create', [FacturaController::class, 'create'])->name('facturas.create');
+    Route::post('/facturas', [FacturaController::class, 'store'])->name('facturas.store');
+    Route::get('/facturas/{id}/edit', [FacturaController::class, 'edit'])->name('facturas.edit');
+    Route::put('/facturas/{id}', [FacturaController::class, 'update'])->name('facturas.update');
+    Route::delete('/facturas/{id}', [FacturaController::class, 'destroy'])->name('facturas.destroy');
+});
+
+
+
+// Página principal del módulo de reportes
+Route::get('reportes', [ReportesController::class, 'index'])->name('reporte.index');
+
+// Mostrar un tipo específico de reporte (bitácoras, ventas, compras, movimientos)
+Route::get('reportes/{tipo}', [ReportesController::class, 'show'])->name('reporte.show');
+
+// Si usas un formulario para crear una configuración de reporte
+Route::get('reportes/create', [ReportesController::class, 'create'])->name('reporte.create');
+Route::post('reportes', [ReportesController::class, 'store'])->name('reporte.store');
+
+// Si deseas permitir edición de una configuración de reporte (opcional)
+Route::get('reportes/{id}/edit', [ReportesController::class, 'edit'])->name('reporte.edit');
+Route::put('reportes/{id}', [ReportesController::class, 'update'])->name('reporte.update');
+
 
 require __DIR__.'/auth.php';
 

@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-bold flex items-center gap-2">
-            <i class="fas fa-box"></i> Productos
+            <i class="fas fa-shopping-cart"></i> Ventas
         </h2>
     </x-slot>
 
@@ -10,10 +10,11 @@
     @endphp
 
     <div class="p-4">
-        @if($permisos::tienePermiso('Productos', 'crear'))
-            <a href="{{ route('producto.create') }}"
+        {{-- Botón de crear nueva venta --}}
+        @if($permisos::tienePermiso('Ventas', 'crear'))
+            <a href="{{ route('ventas.create') }}"
                class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow">
-                <i class="fas fa-plus"></i> Nuevo Producto
+                <i class="fas fa-plus"></i> Nueva venta
             </a>
         @endif
 
@@ -21,37 +22,37 @@
             <table class="min-w-full text-sm text-gray-800">
                 <thead class="bg-orange-500 text-white text-sm uppercase">
                     <tr>
-                        <th class="px-4 py-3 text-left">ID</th>
-                        <th class="px-4 py-3 text-left">Nombre Producto</th>
-                        <th class="px-4 py-3 text-left">Descripción</th>
-                        <th class="px-4 py-3 text-right">Precio Compra</th>
-                        <th class="px-4 py-3 text-right">Precio Venta</th>
-                        <th class="px-4 py-3 text-center">Stock</th>
+                        <th class="px-4 py-3 text-center">Venta ID</th>
+                        <th class="px-4 py-3 text-center">Cliente ID</th>
+                        <th class="px-4 py-3 text-center">Empleado ID</th>
+                        <th class="px-4 py-3 text-center">Fecha Venta</th>
+                        <th class="px-4 py-3 text-center">Total Venta</th>
                         <th class="px-4 py-3 text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                    @foreach($productos as $producto)
+                    @foreach($ventas as $venta)
                         <tr class="hover:bg-gray-50 transition">
-                            <td class="px-4 py-2">{{ $producto->ProductoID }}</td>
-                            <td class="px-4 py-2">{{ $producto->NombreProducto }}</td>
-                            <td class="px-4 py-2">{{ $producto->Descripcion }}</td>
-                            <td class="px-4 py-2 text-right">L. {{ number_format($producto->PrecioCompra, 2) }}</td>
-                            <td class="px-4 py-2 text-right">L. {{ number_format($producto->PrecioVenta, 2) }}</td>
-                            <td class="px-4 py-2 text-center">{{ $producto->Stock }}</td>
+                            <td class="px-4 py-2 text-center">{{ $venta->VentaID }}</td>
+                            <td class="px-4 py-2 text-center">{{ $venta->ClienteID }}</td>
+                            <td class="px-4 py-2 text-center">{{ $venta->EmpleadoID }}</td>
+                            <td class="px-4 py-2 text-center">{{ $venta->FechaVenta }}</td>
+                            <td class="px-4 py-2 text-center">L. {{ number_format($venta->TotalVenta, 2) }}</td>
                             <td class="px-4 py-2 text-center">
                                 <div class="flex items-center justify-center gap-2">
-                                    @if($permisos::tienePermiso('Productos', 'editar'))
-                                        <a href="{{ route('producto.edit', $producto->ProductoID) }}"
-                                           class="bg-yellow-400 hover:bg-yellow-500 text-white p-2 rounded-full"
+                                    {{-- Editar --}}
+                                    @if($permisos::tienePermiso('Ventas', 'editar'))
+                                        <a href="{{ route('ventas.edit', $venta->VentaID) }}"
+                                           class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full"
                                            title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                     @endif
 
-                                    @if($permisos::tienePermiso('Productos', 'eliminar'))
-                                        <form action="{{ route('producto.destroy', $producto->ProductoID) }}" method="POST"
-                                              onsubmit="return confirm('¿Estás seguro de eliminar este producto?')">
+                                    {{-- Eliminar --}}
+                                    @if($permisos::tienePermiso('Ventas', 'eliminar'))
+                                        <form action="{{ route('ventas.destroy', $venta->VentaID) }}" method="POST"
+                                              onsubmit="return confirm('¿Estás seguro de eliminar esta venta?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
@@ -68,15 +69,5 @@
                 </tbody>
             </table>
         </div>
-
-        <div class="mt-4">
-            {{ $productos->links() }}
-        </div>
     </div>
 </x-app-layout>
-
-
-
-
-
-

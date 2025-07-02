@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-bold flex items-center gap-2">
-            <i class="fas fa-box"></i> Productos
+            <i class="fas fa-database"></i> Backups
         </h2>
     </x-slot>
 
@@ -10,10 +10,11 @@
     @endphp
 
     <div class="p-4">
-        @if($permisos::tienePermiso('Productos', 'crear'))
-            <a href="{{ route('producto.create') }}"
+        {{-- Botón de crear backup --}}
+        @if($permisos::tienePermiso('Backups', 'crear'))
+            <a href="{{ route('backups.create') }}"
                class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow">
-                <i class="fas fa-plus"></i> Nuevo Producto
+                <i class="fas fa-plus-circle"></i> Nuevo Backup
             </a>
         @endif
 
@@ -22,36 +23,40 @@
                 <thead class="bg-orange-500 text-white text-sm uppercase">
                     <tr>
                         <th class="px-4 py-3 text-left">ID</th>
-                        <th class="px-4 py-3 text-left">Nombre Producto</th>
+                        <th class="px-4 py-3 text-left">Usuario</th>
+                        <th class="px-4 py-3 text-left">Fecha</th>
+                        <th class="px-4 py-3 text-left">Archivo</th>
+                        <th class="px-4 py-3 text-left">Ruta</th>
+                        <th class="px-4 py-3 text-left">Tamaño</th>
                         <th class="px-4 py-3 text-left">Descripción</th>
-                        <th class="px-4 py-3 text-right">Precio Compra</th>
-                        <th class="px-4 py-3 text-right">Precio Venta</th>
-                        <th class="px-4 py-3 text-center">Stock</th>
                         <th class="px-4 py-3 text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                    @foreach($productos as $producto)
+                    @foreach($backups as $backup)
                         <tr class="hover:bg-gray-50 transition">
-                            <td class="px-4 py-2">{{ $producto->ProductoID }}</td>
-                            <td class="px-4 py-2">{{ $producto->NombreProducto }}</td>
-                            <td class="px-4 py-2">{{ $producto->Descripcion }}</td>
-                            <td class="px-4 py-2 text-right">L. {{ number_format($producto->PrecioCompra, 2) }}</td>
-                            <td class="px-4 py-2 text-right">L. {{ number_format($producto->PrecioVenta, 2) }}</td>
-                            <td class="px-4 py-2 text-center">{{ $producto->Stock }}</td>
+                            <td class="px-4 py-2">{{ $backup->BackupID }}</td>
+                            <td class="px-4 py-2">{{ $backup->UsuarioID }}</td>
+                            <td class="px-4 py-2">{{ $backup->FechaBackup }}</td>
+                            <td class="px-4 py-2">{{ $backup->NombreArchivo }}</td>
+                            <td class="px-4 py-2">{{ $backup->RutaArchivo }}</td>
+                            <td class="px-4 py-2">{{ number_format($backup->TamanoMB, 2) }} MB</td>
+                            <td class="px-4 py-2">{{ $backup->Descripcion }}</td>
                             <td class="px-4 py-2 text-center">
                                 <div class="flex items-center justify-center gap-2">
-                                    @if($permisos::tienePermiso('Productos', 'editar'))
-                                        <a href="{{ route('producto.edit', $producto->ProductoID) }}"
+                                    {{-- Editar --}}
+                                    @if($permisos::tienePermiso('Backups', 'editar'))
+                                        <a href="{{ route('backups.edit', $backup->BackupID) }}"
                                            class="bg-yellow-400 hover:bg-yellow-500 text-white p-2 rounded-full"
                                            title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                     @endif
 
-                                    @if($permisos::tienePermiso('Productos', 'eliminar'))
-                                        <form action="{{ route('producto.destroy', $producto->ProductoID) }}" method="POST"
-                                              onsubmit="return confirm('¿Estás seguro de eliminar este producto?')">
+                                    {{-- Eliminar --}}
+                                    @if($permisos::tienePermiso('Backups', 'eliminar'))
+                                        <form action="{{ route('backups.destroy', $backup->BackupID) }}" method="POST"
+                                              onsubmit="return confirm('¿Estás seguro de eliminar este backup?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
@@ -68,15 +73,5 @@
                 </tbody>
             </table>
         </div>
-
-        <div class="mt-4">
-            {{ $productos->links() }}
-        </div>
     </div>
 </x-app-layout>
-
-
-
-
-
-

@@ -1,72 +1,76 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-bold">🔐 Gestión de Roles</h2>
+        <h2 class="text-xl font-bold flex items-center gap-2">
+            <i class="fas fa-user-shield"></i> Gestión de Roles
+        </h2>
     </x-slot>
 
-     @php
+    @php
         $permisos = \App\Helpers\PermisosHelper::class;
     @endphp
 
     <div class="p-4">
         {{-- Botón para agregar nuevo rol --}}
-                @if($permisos::tienePermiso('Roles', 'crear'))
-        <a href="{{ route('roles.create') }}"
-           style="background-color: #2563eb; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            ➕ Nuevo rol
-        </a>
+        @if($permisos::tienePermiso('Roles', 'crear'))
+            <a href="{{ route('roles.create') }}"
+               class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow">
+                <i class="fas fa-plus-circle"></i> Nuevo rol
+            </a>
         @endif
 
         {{-- Tabla de roles --}}
-        <table class="table-auto w-full mt-4 border rounded shadow">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="border px-4 py-2 text-center">ID</th>
-                    <th class="border px-4 py-2 text-center">Descripción</th>
-                    <th class="border px-4 py-2 text-center">Estado</th>
-                    <th class="border px-4 py-2 text-center">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($roles as $rol)
-                <tr class="hover:bg-gray-50">
-                    <td class="border px-4 py-2 text-center">{{ $rol->ID_Rol }}</td>
-                    <td class="border px-4 py-2 text-center">{{ $rol->Descripcion }}</td>
-                    <td class="border px-4 py-2 text-center">{{ $rol->Estado }}</td>
-                    <td class="px-4 py-2 text-center space-x-2">
-                        {{-- Botón editar --}}
-                        @if($permisos::tienePermiso('Roles', 'editar'))
-                        <a href="{{ route('roles.edit', $rol->ID_Rol) }}"
-                           style="background-color: #f59e0b; color: white; padding: 8px; border-radius: 50%; display: inline-block;"
-                           title="Editar">
-                            ✏️
-                        </a>
-                        @endif
+        <div class="overflow-x-auto bg-white rounded-lg shadow mt-4">
+            <table class="min-w-full text-sm text-gray-800">
+                <thead class="bg-orange-500 text-white text-sm uppercase">
+                    <tr>
+                        <th class="px-4 py-3 text-left">ID</th>
+                        <th class="px-4 py-3 text-left">Descripción</th>
+                        <th class="px-4 py-3 text-left">Estado</th>
+                        <th class="px-4 py-3 text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    @foreach($roles as $rol)
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-4 py-2">{{ $rol->ID_Rol }}</td>
+                            <td class="px-4 py-2">{{ $rol->Descripcion }}</td>
+                            <td class="px-4 py-2">{{ $rol->Estado }}</td>
+                            <td class="px-4 py-2 text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    {{-- Editar --}}
+                                    @if($permisos::tienePermiso('Roles', 'editar'))
+                                        <a href="{{ route('roles.edit', $rol->ID_Rol) }}"
+                                           class="bg-yellow-400 hover:bg-yellow-500 text-white p-2 rounded-full"
+                                           title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    @endif
 
-                        {{-- Botón eliminar --}}
-                        @if($permisos::tienePermiso('Roles', 'elimiar'))
-                        <form action="{{ route('roles.destroy', $rol->ID_Rol) }}" method="POST" class="inline-block" onsubmit="return confirm('¿Estás seguro de eliminar este rol?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                    style="background-color: #dc2626; color: white; padding: 8px; border-radius: 50%; display: inline-block;"
-                                    title="Eliminar">
-                                🗑️
-                            </button>
-                        </form>
-                        {{-- Botón Asignar Permisos --}}
-                        <a href="{{ route('roles.permisos.edit', $rol->ID_Rol) }}"
-                        style="background-color: #16a34a; color: white; padding: 8px; border-radius: 50%; display: inline-block;"
-                         title="Asignar Permisos">
-                        ⚙️
-                        </a>
-                        @endif
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                                    {{-- Eliminar --}}
+                                    @if($permisos::tienePermiso('Roles', 'eliminar'))
+                                        <form action="{{ route('roles.destroy', $rol->ID_Rol) }}" method="POST"
+                                              onsubmit="return confirm('¿Estás seguro de eliminar este rol?')"
+                                              class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full"
+                                                    title="Eliminar">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 </x-app-layout>
+
+
 
 
 

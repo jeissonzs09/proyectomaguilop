@@ -1,155 +1,262 @@
+@php use App\Helpers\PermisosHelper; @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>Maguilop</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
+<body class="bg-gray-100 text-gray-800 font-sans">
 
-<body class="bg-gray-100 text-gray-800">
+<div class="flex min-h-screen">
 
-@php use App\Helpers\PermisosHelper; @endphp
+    {{-- SIDEBAR --}}
+    <aside class="w-64 bg-gradient-to-b from-orange-700 to-orange-500 text-white flex flex-col shadow-lg">
+        {{-- LOGO --}}
+<div class="flex justify-center items-center px-4 py-5 border-b border-orange-400">
+    <img src="{{ asset('images/logo-maguilop.png') }}" alt="Logo" class="h-12 object-contain w-full">
+</div>
 
 
-    <div class="flex min-h-screen">
+        {{-- NAVEGACIÓN --}}
+        <nav class="flex-1 px-4 py-4 text-sm space-y-2">
 
-        {{-- Sidebar --}}
-<aside style="width: 250px; background: linear-gradient(to bottom, #ef6c00, #ff9800); color: white; padding-top: 1rem; box-shadow: 2px 0 5px rgba(0,0,0,0.1);">
-    {{-- Logo --}}
-    <div style="padding: 1rem; border-bottom: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; gap: 10px;">
-        <a href="{{ route('dashboard') }}" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: white;">
-            <img src="{{ asset('images/logo-maguilop.jpg') }}" alt="Logo Maguilop" style="height: 40px; max-width: 100px; object-fit: contain;">
-            <span style="font-weight: bold; font-size: 1rem;">Maguilop</span>
+            <div class="uppercase text-orange-200 text-xs tracking-wide mb-2">Menú principal</div>
+
+<a href="{{ route('dashboard') }}" class="flex items-center space-x-2 px-3 py-2 rounded hover:bg-orange-600 transition">
+    <i class="fas fa-tachometer-alt w-4 h-4"></i>
+    <span>Dashboard</span>
+</a>
+
+
+{{-- Seguridad --}}
+<div x-data="{ open: false }">
+    <button @click="open = !open" class="flex items-center justify-between w-full px-3 py-2 rounded hover:bg-orange-600 transition">
+        <span class="flex items-center space-x-2">
+            <i class="fas fa-shield-alt w-4 h-4"></i>
+            <span>Seguridad</span>
+        </span>
+        <i class="fas fa-chevron-down text-xs" :class="{ 'rotate-180': open }" style="transition: transform 0.3s;"></i>
+    </button>
+
+    <div x-show="open"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 max-h-0"
+         x-transition:enter-end="opacity-100 max-h-96"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 max-h-96"
+         x-transition:leave-end="opacity-0 max-h-0"
+         class="pl-6 mt-1 space-y-1 overflow-hidden">
+
+        @if(PermisosHelper::tienePermiso('Usuarios', 'ver'))
+        <a href="{{ route('usuarios.index') }}" class="flex items-center gap-2 px-10 py-2 hover:bg-white/10">
+            <i class="fas fa-user w-4 h-4"></i>
+            Usuarios
         </a>
+        @endif
+
+        @if(PermisosHelper::tienePermiso('Roles', 'ver'))
+        <a href="{{ route('roles.index') }}" class="flex items-center gap-2 px-10 py-2 hover:bg-white/10">
+            <i class="fas fa-user-shield w-4 h-4"></i>
+            Roles
+        </a>
+        @endif
+
+        @if(PermisosHelper::tienePermiso('Permisos por Rol', 'ver'))
+        <a href="{{ route('roles.permisos') }}" class="flex items-center gap-2 px-10 py-2 hover:bg-white/10">
+            <i class="fas fa-key w-4 h-4"></i>
+            Permisos
+        </a>
+        @endif
+
+        @if(PermisosHelper::tienePermiso('Backups', 'ver'))
+        <a href="{{ route('backups.index') }}" class="flex items-center gap-2 px-10 py-2 hover:bg-white/10">
+            <i class="fas fa-database w-4 h-4"></i>
+            Backups
+        </a>
+        @endif
+
+        @if(PermisosHelper::tienePermiso('Bitacora', 'ver'))
+        <a href="{{ route('bitacoras.index') }}" class="flex items-center gap-2 px-10 py-2 hover:bg-white/10">
+            <i class="fas fa-clipboard-list w-4 h-4"></i>
+            Bitácoras
+        </a>
+        @endif
+
     </div>
+</div>
 
-    {{-- Navegación --}}
-    <nav style="margin-top: 1rem; font-size: 15px;">
-        {{-- Dashboard --}}
-        <a href="{{ route('dashboard') }}"
-           style="display: flex; align-items: center; gap: 10px; padding: 12px 20px; color: white; text-decoration: none; font-weight: 500;"
-           onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
-            <svg xmlns="http://www.w3.org/2000/svg" style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M13 5v6h6m-6 0H5m8 0v6" />
-            </svg>
-            Dashboard
-        </a>
 
-        {{-- Seguridad (desplegable) --}}
-        <div style="padding: 12px 20px; font-weight: bold; text-transform: uppercase; opacity: 0.9; font-size: 13px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="toggleSeguridad()">
-            <span style="display: flex; align-items: center; gap: 10px;">
-                <svg xmlns="http://www.w3.org/2000/svg" style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0-1.657-2-3-2-5s1-3 2-3 2 1 2 3-2 3-2 5m0 2v1m0 4h.01" />
-                </svg>
-                Seguridad
-            </span>
-            <span style="font-size: 16px;">▼</span>
-        </div>
-        <div id="submenu-seguridad" style="display: none;">
-            @if(PermisosHelper::tienePermiso('Usuarios', 'ver'))
-            <a href="{{ route('usuarios.index') }}"
-               style="display: flex; align-items: center; gap: 10px; padding: 10px 35px; color: white; text-decoration: none;"
-               onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
-                <svg xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5V8H2v12h5m0 0v2m0-2h10m0 2v-2" />
-                </svg>
-                Usuarios
-            </a>
+            @if(PermisosHelper::tienePermiso('Reparaciones', 'ver'))
+<a href="{{ route('reparaciones.index') }}" class="flex items-center space-x-2 px-3 py-2 rounded hover:bg-orange-600 transition">
+    <i class="fas fa-tools w-4 h-4"></i>
+    <span>Reparaciones</span>
+</a>
+
             @endif
 
-@if(PermisosHelper::tienePermiso('Roles', 'ver'))
-            <a href="{{ route('roles.index') }}"
-               style="display: flex; align-items: center; gap: 10px; padding: 10px 35px; color: white; text-decoration: none;"
-               onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
-                <svg xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m2 4H7m2-4v6m4-6v6M4 4h16v4H4z" />
-                </svg>
-                Roles
-            </a>
-    @endif
+            @if(PermisosHelper::tienePermiso('Productos', 'ver'))
+<a href="{{ route('producto.index') }}" class="flex items-center space-x-2 px-3 py-2 rounded hover:bg-orange-600 transition">
+    <i class="fas fa-box-open w-4 h-4"></i>
+    <span>Productos</span>
+</a>
 
-@if(PermisosHelper::tienePermiso('Permisos por Rol', 'ver'))
-    <a href="{{ route('roles.permisos') }}"
-       style="display: flex; align-items: center; gap: 10px; padding: 10px 35px; color: white; text-decoration: none;"
-       onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
-        <svg xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a4 4 0 014-4h6M9 17v2a4 4 0 004 4h6m-10-6H5a2 2 0 01-2-2V5a2 2 0 012-2h10a2 2 0 012 2v6" />
-        </svg>
-        Permisos por Rol
-    </a>
-    @endif
-        </div>
+            @endif
 
-    @if(PermisosHelper::tienePermiso('Reparaciones', 'ver'))
-    <a href="{{ route('reparaciones.index') }}"
-       style="display: flex; align-items: center; gap: 10px; padding: 10px 35px; color: white; text-decoration: none;"
-       onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
-        <svg xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232a3 3 0 014.243 4.243L10.5 18.5 6 19l.5-4.5 8.732-8.768z" />
-        </svg>
-        Reparaciones
-    </a>
-    @endif
+            @if(PermisosHelper::tienePermiso('Ventas', 'ver'))
+<a href="{{ route('ventas.index') }}" class="flex items-center space-x-2 px-3 py-2 rounded hover:bg-orange-600 transition">
+    <i class="fas fa-cash-register w-4 h-4"></i>
+    <span>Ventas</span>
+</a>
 
-        @if(PermisosHelper::tienePermiso('Productos', 'ver'))
-        <a href="{{ route('producto.index') }}"
-       style="display: flex; align-items: center; gap: 10px; padding: 10px 35px; color: white; text-decoration: none;"
-       onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
-        <svg xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 7l3 14h12l3-14M12 3v4" />
-        </svg>
-        Productos
-    </a>
-    @endif
+            @endif
 
-    </nav>
+            @if(PermisosHelper::tienePermiso('Pedidos', 'ver'))
+<a href="{{ route('pedidos.index') }}" class="flex items-center space-x-2 px-3 py-2 rounded hover:bg-orange-600 transition">
+    <i class="fas fa-clipboard-list w-4 h-4"></i>
+    <span>Pedidos</span>
+</a>
 
-    {{-- Script para toggle --}}
-    <script>
-        function toggleSeguridad() {
-            const submenu = document.getElementById('submenu-seguridad');
-            submenu.style.display = submenu.style.display === 'none' ? 'block' : 'none';
-        }
-    </script>
+            @endif
 
-</aside>
+            @if(PermisosHelper::tienePermiso('Factura', 'ver'))
+<a href="{{ route('facturas.index') }}" class="flex items-center space-x-2 px-3 py-2 rounded hover:bg-orange-600 transition">
+    <i class="fas fa-file-invoice w-4 h-4"></i>
+    <span>Facturas</span>
+</a>
 
-        {{-- Main Content --}}
-        <div class="flex-1 flex flex-col">
-            {{-- Header --}}
-<header style="background: linear-gradient(to right, #ef6c00, #ff9800); padding: 16px 24px; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-    {{-- Título del módulo --}}
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <svg xmlns="http://www.w3.org/2000/svg" style="width: 22px; height: 22px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17l-3-3 3-3M14.25 7l3 3-3 3" />
-        </svg>
-        <h1 style="font-size: 20px; font-weight: 600;">{{ $header ?? 'Panel' }}</h1>
+            @endif
+
+            @if(PermisosHelper::tienePermiso('Reporte', 'ver'))
+<a href="{{ route('reporte.index') }}" class="flex items-center space-x-2 px-3 py-2 rounded hover:bg-orange-600 transition">
+    <i class="fas fa-chart-bar w-4 h-4"></i>
+    <span>Reportes</span>
+</a>
+
+            @endif
+
+            {{-- Gestión --}}
+            <div x-data="{ open: false }">
+                <button @click="open = !open" class="flex items-center justify-between w-full px-3 py-2 rounded hover:bg-orange-600 transition">
+    <span class="flex items-center space-x-2">
+        <i class="fas fa-folder-open w-4 h-4"></i>
+        <span>Gestión</span>
+    </span>
+    <i class="fas fa-chevron-down text-xs"></i>
+                </button>
+                    <div x-show="open"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 max-h-0"
+         x-transition:enter-end="opacity-100 max-h-96"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 max-h-96"
+         x-transition:leave-end="opacity-0 max-h-0"
+         class="pl-6 mt-1 space-y-1 overflow-hidden">
+                    @if(PermisosHelper::tienePermiso('Empleados', 'ver'))
+<a href="{{ route('empleados.index') }}" class="flex items-center space-x-2 px-6 py-2 hover:bg-orange-600 transition">
+    <i class="fas fa-user-tie w-4 h-4"></i>
+    <span>Empleados</span>
+</a>
+
+                    @endif
+                    @if(PermisosHelper::tienePermiso('Proveedores', 'ver'))
+<a href="{{ route('proveedores.index') }}" class="flex items-center space-x-2 px-6 py-2 hover:bg-orange-600 transition">
+    <i class="fas fa-industry w-4 h-4"></i>
+    <span>Proveedores</span>
+</a>
+
+                    @endif
+                    @if(PermisosHelper::tienePermiso('Clientes', 'ver'))
+<a href="{{ route('clientes.index') }}" class="flex items-center space-x-2 px-6 py-2 hover:bg-orange-600 transition">
+    <i class="fas fa-users w-4 h-4"></i>
+    <span>Clientes</span>
+</a>
+
+                    @endif
+                </div>
+            </div>
+
+            {{-- Compra --}}
+            <div x-data="{ open: false }">
+                <button @click="open = !open" class="flex items-center justify-between w-full px-3 py-2 rounded hover:bg-orange-600 transition">
+    <span class="flex items-center space-x-2">
+        <i class="fas fa-shopping-cart w-4 h-4"></i>
+        <span>Compra</span>
+    </span>
+    <i class="fas fa-chevron-down text-xs"></i>
+                </button>
+                    <div x-show="open"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 max-h-0"
+         x-transition:enter-end="opacity-100 max-h-96"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 max-h-96"
+         x-transition:leave-end="opacity-0 max-h-0"
+         class="pl-6 mt-1 space-y-1 overflow-hidden">
+                    @if(PermisosHelper::tienePermiso('Compras', 'ver'))
+<a href="{{ route('compras.index') }}" class="flex items-center space-x-2 px-6 py-2 hover:bg-orange-600 transition">
+    <i class="fas fa-receipt w-4 h-4"></i>
+    <span>Compras</span>
+</a>
+                    @endif
+                    @if(PermisosHelper::tienePermiso('DetalleCompras', 'ver'))
+<a href="{{ route('detallecompras.index') }}" class="flex items-center space-x-2 px-6 py-2 hover:bg-orange-600 transition">
+    <i class="fas fa-box-open w-4 h-4"></i>
+    <span>Detalle Compras</span>
+</a>
+                    @endif
+                </div>
+            </div>
+
+        </nav>
+
+        <div class="p-4 text-xs text-orange-200 border-t border-orange-500">Versión 1.0</div>
+    </aside>
+
+    {{-- CONTENIDO PRINCIPAL --}}
+    <div class="flex-1 flex flex-col">
+
+        {{-- ENCABEZADO --}}
+        <header class="bg-gradient-to-r from-orange-600 to-orange-400 text-white shadow px-6 py-4 flex justify-between items-center">
+            <h1 class="text-lg font-semibold">{{ $header ?? 'Panel' }}</h1>
+            <div x-data="{ open: false }" class="relative">
+                <button @click="open = !open" class="flex items-center space-x-2 hover:bg-orange-500 px-3 py-2 rounded">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M5.121 17.804A13.937 13.937 0 0112 15c2.577 0 4.97.728 6.879 1.975M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span class="hidden md:inline">{{ Auth::user()->name }}</span>
+                </button>
+                <div x-show="open" class="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded shadow-md z-50">
+                    <div class="px-4 py-2 border-b">
+                        <div class="font-semibold">{{ Auth::user()->name }}</div>
+<div class="text-sm text-gray-500">{{ Auth::user()->NombreUsuario }}</div>
+                    </div>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+<button type="submit"
+        class="w-full px-4 py-2 text-left text-red-600 hover:bg-red-100 flex items-center gap-2">
+    <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+</button>
+
+                    </form>
+                </div>
+            </div>
+        </header>
+
+        {{-- CONTENIDO --}}
+        <main class="p-6 flex-1">
+            {{ $slot }}
+        </main>
     </div>
-
-    {{-- Botón cerrar sesión --}}
-    <form method="POST" action="{{ route('logout') }}">
-        @csrf
-        <button type="submit"
-                style="background-color: #ffffff; color: #ef6c00; font-weight: bold; border: none; padding: 8px 16px; border-radius: 6px; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); cursor: pointer;"
-                onmouseover="this.style.backgroundColor='#f3f4f6'" onmouseout="this.style.backgroundColor='#ffffff'">
-            <svg xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
-            </svg>
-            Cerrar sesión
-        </button>
-    </form>
-</header>
-
-
-
-            {{-- Content --}}
-            <main class="p-6 flex-1">
-                    {{ $slot }}
-            </main>
-        </div>
-    </div>
+</div>
 
 </body>
 </html>
+
+
+
 

@@ -20,7 +20,20 @@ class RolPermisoModuloController extends Controller
 
         // Lista de módulos definidos en el sistema
         $modulos = [
-            'Usuarios', 'Roles', 'Permisos por Rol', 'Reparaciones', 'Productos'
+            'Usuarios', 
+            'Roles', 
+            'Permisos por Rol', 
+            'Reparaciones', 
+            'Productos', 
+            'Ventas', 
+            'Pedidos', 
+            'Facturas', 
+            'Reportes', 
+            'Emplados', 
+            'Proveedores', 
+            'Clientes', 
+            'Compras', 
+            'Detalle Compras' 
         ];
 
         // Permisos actuales agrupados por ID_Rol y módulo
