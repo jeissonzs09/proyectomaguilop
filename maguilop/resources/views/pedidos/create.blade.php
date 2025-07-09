@@ -1,10 +1,9 @@
-<x-app-layout>
-    <x-slot name="header">
+                                                                                                                                                                                                                      <x-app-layout><x-slot name="header">
         <h2 class="text-xl font-bold">🛒 Nuevo Pedido</h2>
     </x-slot>
 
     <div class="max-w-3xl mx-auto mt-6 bg-white p-6 rounded shadow">
-        <form action="{{ route('pedidos.store') }}" method="POST">
+        <form action="{{ route('pedidos.store') }}" method="POST" id="formPedido">
             @csrf
 
             <div class="mb-4">
@@ -33,8 +32,14 @@
 
             <div class="mb-4">
                 <label for="Estado" class="block text-gray-700 font-bold mb-2">Estado</label>
-                <input type="text" name="Estado" id="Estado" placeholder="Ej: Pendiente"
-                    class="w-full border rounded px-3 py-2" required>
+                <select id="Estado" name="Estado" class="w-full border rounded px-3 py-2" required>
+                    @php
+                        $estados = ['Pendiente', 'Enviado', 'Entregado', 'Cancelado'];
+                    @endphp
+                    @foreach($estados as $estado)
+                        <option value="{{ $estado }}">{{ $estado }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <h3 class="text-lg font-bold mt-6">Detalles del Pedido</h3>
@@ -47,14 +52,14 @@
 
             <div class="mb-4">
                 <label for="Cantidad" class="block text-gray-700 font-bold mb-2">Cantidad</label>
-                <input type="number" name="Cantidad" id="Cantidad" placeholder="Ej: 10"
-                    class="w-full border rounded px-3 py-2" required>
+                <input type="number" name="Cantidad" id="Cantidad" placeholder="Ej: 10" min="1"
+                    class="w-full border rounded px-3 py-2" required oninput="calcularSubtotal()">
             </div>
 
             <div class="mb-4">
                 <label for="PrecioUnitario" class="block text-gray-700 font-bold mb-2">Precio Unitario</label>
-                <input type="number" step="0.01" name="PrecioUnitario" id="PrecioUnitario" placeholder="Ej: 15.50"
-                    class="w-full border rounded px-3 py-2" required>
+                <input type="number" step="0.01" min="0" name="PrecioUnitario" id="PrecioUnitario" placeholder="Ej: 15.50"
+                    class="w-full border rounded px-3 py-2" required oninput="calcularSubtotal()">
             </div>
 
             <div class="mb-4">
@@ -75,4 +80,13 @@
             </div>
         </form>
     </div>
+
+    <script>
+        function calcularSubtotal() {
+            const cantidad = parseFloat(document.getElementById('Cantidad').value) || 0;
+            const precioUnitario = parseFloat(document.getElementById('PrecioUnitario').value) || 0;
+            const subtotalInput = document.getElementById('Subtotal');
+            subtotalInput.value = (cantidad * precioUnitario).toFixed(2);
+        }
+    </script>
 </x-app-layout>

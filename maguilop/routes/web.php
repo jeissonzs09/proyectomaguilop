@@ -23,6 +23,7 @@ use App\Http\Controllers\BackupController;
 use App\Http\Controllers\BitacoraController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\ReportesController;
+use App\Http\Controllers\DashboardController;
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('usuarios', UsuarioController::class);
@@ -170,6 +171,13 @@ Route::post('reportes', [ReportesController::class, 'store'])->name('reporte.sto
 // Si deseas permitir edición de una configuración de reporte (opcional)
 Route::get('reportes/{id}/edit', [ReportesController::class, 'edit'])->name('reporte.edit');
 Route::put('reportes/{id}', [ReportesController::class, 'update'])->name('reporte.update');
+
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth'])
+    ->name('dashboard');
+
+    Route::resource('ventas', VentaController::class);
+
 
 
 require __DIR__.'/auth.php';

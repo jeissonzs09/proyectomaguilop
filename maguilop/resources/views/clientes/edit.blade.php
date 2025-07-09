@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-bold">✏️ Editar Cliente #{{ $cliente->ClienteID }}</h2>
+        <h2 class="text-xl font-bold">✏ Editar Cliente #{{ $cliente->ClienteID }}</h2>
     </x-slot>
 
     <div class="p-6 max-w-3xl mx-auto bg-white shadow-md rounded-md">
@@ -25,11 +25,16 @@
             </div>
 
             <div>
-                <label for="Categoria" class="block text-gray-700 font-semibold mb-2">Categoría</label>
-                <input type="text" name="Categoria" id="Categoria" value="{{ old('Categoria', $cliente->Categoria) }}"
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
-                @error('Categoria') <p class="text-red-600 mt-1 text-sm">{{ $message }}</p> @enderror
-            </div>
+    <label for="Categoria" class="block text-gray-700 font-semibold mb-2">Categoría</label>
+    <select name="Categoria" id="Categoria"
+        class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+        <option value="" disabled {{ old('Categoria', $cliente->Categoria ?? '') == '' ? 'selected' : '' }}>Selecciona una categoría</option>
+        <option value="Regular" {{ old('Categoria', $cliente->Categoria ?? '') == 'Regular' ? 'selected' : '' }}>Regular</option>
+        <option value="Premium" {{ old('Categoria', $cliente->Categoria ?? '') == 'Premium' ? 'selected' : '' }}>Premium</option>
+        <option value="VIP" {{ old('Categoria', $cliente->Categoria ?? '') == 'VIP' ? 'selected' : '' }}>VIP</option>
+    </select>
+    @error('Categoria') <p class="text-red-600 mt-1 text-sm">{{ $message }}</p> @enderror
+</div>
 
             <div>
                 <label for="FechaRegistro" class="block text-gray-700 font-semibold mb-2">Fecha de Registro</label>

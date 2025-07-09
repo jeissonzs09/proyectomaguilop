@@ -10,6 +10,18 @@
     @endphp
 
     <div class="p-4">
+        @if(session('success'))
+    <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-800 rounded">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-800 rounded">
+        {{ session('error') }}
+    </div>
+@endif
+
         @if($permisos::tienePermiso('Empleados', 'crear'))
             <a href="{{ route('empleados.create') }}"
                class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow">

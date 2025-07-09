@@ -23,9 +23,10 @@
                 <thead class="bg-orange-500 text-white text-sm uppercase">
                     <tr>
                         <th class="px-4 py-3 text-center">Venta ID</th>
-                        <th class="px-4 py-3 text-center">Cliente ID</th>
-                        <th class="px-4 py-3 text-center">Empleado ID</th>
+                        <th class="px-4 py-3 text-center">Cliente</th>
+                        <th class="px-4 py-3 text-center">Empleado</th>
                         <th class="px-4 py-3 text-center">Fecha Venta</th>
+                        <th class="px-4 py-3 text-left">Producto</th>
                         <th class="px-4 py-3 text-center">Total Venta</th>
                         <th class="px-4 py-3 text-center">Acciones</th>
                     </tr>
@@ -34,9 +35,16 @@
                     @foreach($ventas as $venta)
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-4 py-2 text-center">{{ $venta->VentaID }}</td>
-                            <td class="px-4 py-2 text-center">{{ $venta->ClienteID }}</td>
-                            <td class="px-4 py-2 text-center">{{ $venta->EmpleadoID }}</td>
+                            <td class="px-4 py-2 text-center">
+    {{ $venta->cliente->NombreCliente ?? '—' }}
+</td>
+<td class="px-4 py-2 text-center">
+    {{ $venta->empleado->persona->NombreCompleto ?? '—' }}
+</td>
                             <td class="px-4 py-2 text-center">{{ $venta->FechaVenta }}</td>
+                            <td class="px-4 py-2">
+    {{ $venta->producto->NombreProducto ?? '—' }}
+</td>
                             <td class="px-4 py-2 text-center">L. {{ number_format($venta->TotalVenta, 2) }}</td>
                             <td class="px-4 py-2 text-center">
                                 <div class="flex items-center justify-center gap-2">

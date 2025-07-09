@@ -68,13 +68,16 @@ class EmpleadoController extends Controller
         return redirect()->route('empleados.index')->with('success', 'Empleado actualizado correctamente.');
     }
 
-    public function destroy($id)
-    {
-        if (!PermisosHelper::tienePermiso('Empleados', 'eliminar')) {
-            abort(403);
-        }
+public function destroy($id)
+{
+    try {
+        $empleado = \App\Models\Empleado::findOrFail($id);
+        $empleado->delete();
 
-        Empleado::findOrFail($id)->delete();
         return redirect()->route('empleados.index')->with('success', 'Empleado eliminado correctamente.');
+    } catch (\Illuminate\Database\QueryException $e) {
+        return redirect()->route('empleados.index')->with('error', 'No se puede eliminar el empleado porque tiene compras asociadas.');
     }
+}
+
 }

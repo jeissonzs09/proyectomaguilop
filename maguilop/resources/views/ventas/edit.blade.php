@@ -8,33 +8,69 @@
             @csrf
             @method('PUT')
 
+            {{-- Cliente --}}
             <div class="mb-4">
-                <label for="ClienteID" class="block text-gray-700 font-bold mb-2">Cliente ID</label>
-                <input type="number" name="ClienteID" id="ClienteID" value="{{ old('ClienteID', $venta->ClienteID) }}" placeholder="Ej: 1"
-                    class="w-full border rounded px-3 py-2" required>
+                <label for="ClienteID" class="block text-gray-700 font-bold mb-2">Cliente</label>
+                <select name="ClienteID" id="ClienteID" class="w-full border rounded px-3 py-2" required>
+                    <option value="">Seleccione un cliente</option>
+                    @foreach ($clientes as $cliente)
+                        <option value="{{ $cliente->ClienteID }}" {{ old('ClienteID', $venta->ClienteID) == $cliente->ClienteID ? 'selected' : '' }}>
+                            {{ $cliente->NombreCliente }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
+            {{-- Empleado --}}
             <div class="mb-4">
-                <label for="EmpleadoID" class="block text-gray-700 font-bold mb-2">Empleado ID</label>
-                <input type="number" name="EmpleadoID" id="EmpleadoID" value="{{ old('EmpleadoID', $venta->EmpleadoID) }}" placeholder="Ej: 2"
-                    class="w-full border rounded px-3 py-2" required>
+                <label for="EmpleadoID" class="block text-gray-700 font-bold mb-2">Empleado</label>
+                <select name="EmpleadoID" id="EmpleadoID" class="w-full border rounded px-3 py-2" required>
+                    <option value="">Seleccione un empleado</option>
+                    @foreach ($empleados as $empleado)
+                        <option value="{{ $empleado->EmpleadoID }}" {{ old('EmpleadoID', $venta->EmpleadoID) == $empleado->EmpleadoID ? 'selected' : '' }}>
+                            {{ $empleado->persona->Nombre ?? 'Empleado #' . $empleado->EmpleadoID }}
+                            {{ $empleado->persona->Apellido ?? '' }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
+            {{-- Fecha --}}
             <div class="mb-4">
                 <label for="FechaVenta" class="block text-gray-700 font-bold mb-2">Fecha Venta</label>
-                <input type="date" name="FechaVenta" id="FechaVenta" value="{{ old('FechaVenta', $venta->FechaVenta) }}"
-                    class="w-full border rounded px-3 py-2" required>
+                <input type="date" name="FechaVenta" id="FechaVenta"
+                       value="{{ old('FechaVenta', \Illuminate\Support\Carbon::parse($venta->FechaVenta)->format('Y-m-d')) }}"
+                       class="w-full border rounded px-3 py-2" required>
             </div>
 
+            {{-- Producto --}}
+<div class="mb-4">
+    <label for="ProductoID" class="block text-gray-700 font-bold mb-2">Producto</label>
+    <select name="ProductoID" id="ProductoID" class="w-full border rounded px-3 py-2" required>
+        <option value="">Seleccione un producto</option>
+        @foreach ($productos as $producto)
+            <option value="{{ $producto->ProductoID }}"
+                data-precio="{{ $producto->PrecioVenta }}"
+                {{ old('ProductoID', $venta->ProductoID) == $producto->ProductoID ? 'selected' : '' }}>
+                {{ $producto->NombreProducto }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
+
+            {{-- Total --}}
             <div class="mb-4">
                 <label for="TotalVenta" class="block text-gray-700 font-bold mb-2">Total Venta</label>
-                <input type="number" step="0.01" name="TotalVenta" id="TotalVenta" value="{{ old('TotalVenta', $venta->TotalVenta) }}" placeholder="Ej: 150.00"
-                    class="w-full border rounded px-3 py-2" required>
+                <input type="number" step="0.01" name="TotalVenta" id="TotalVenta"
+                       value="{{ old('TotalVenta', $venta->TotalVenta) }}" placeholder="Ej: 150.00"
+                       class="w-full border rounded px-3 py-2" required>
             </div>
 
+            {{-- Botones --}}
             <div class="flex justify-between">
                 <a href="{{ route('ventas.index') }}"
-                    class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+                   class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
                     ❌ Cancelar
                 </a>
                 <button type="submit"
@@ -44,4 +80,19 @@
             </div>
         </form>
     </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const productoSelect = document.getElementById('ProductoID');
+        const totalInput = document.getElementById('TotalVenta');
+
+        productoSelect.addEventListener('change', function () {
+            const selected = this.options[this.selectedIndex];
+            const precio = selected.getAttribute('data-precio');
+            if (precio) {
+                totalInput.value = parseFloat(precio).toFixed(2);
+            }
+        });
+    });
+</script>
+
 </x-app-layout>

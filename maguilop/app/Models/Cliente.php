@@ -18,4 +18,11 @@ class Cliente extends Model
         'Estado',
         'Notas',
     ];
+
+    // En App\Models\Cliente.php
+
+public function reparaciones()
+{
+    return $this->hasMany(Reparacion::class, 'ClienteID');
+}
 }

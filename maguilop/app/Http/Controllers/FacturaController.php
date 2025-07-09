@@ -35,16 +35,20 @@ class FacturaController extends Controller
             'EmpleadoID' => 'required|integer',
             'Fecha' => 'required|date',
             'Total' => 'required|numeric',
-            'detalles' => 'required|array',
+            'detalles' => 'required|array|min:1',
             'detalles.*.ProductoID' => 'required|integer',
-            'detalles.*.Cantidad' => 'required|integer',
-            'detalles.*.PrecioUnitario' => 'required|numeric',
-            'detalles.*.Subtotal' => 'required|numeric',
+            'detalles.*.Cantidad' => 'required|integer|min:1',
+            'detalles.*.PrecioUnitario' => 'required|numeric|min:0',
+            'detalles.*.Subtotal' => 'required|numeric|min:0',
         ]);
 
-        $factura = Factura::create($request->all());
+        $factura = Factura::create([
+            'ClienteID' => $request->ClienteID,
+            'EmpleadoID' => $request->EmpleadoID,
+            'Fecha' => $request->Fecha,
+            'Total' => $request->Total,
+        ]);
 
-        // Guardar detalles de la factura
         foreach ($request->detalles as $detalle) {
             DetalleFactura::create([
                 'FacturaID' => $factura->FacturaID,
@@ -75,18 +79,25 @@ class FacturaController extends Controller
             'EmpleadoID' => 'required|integer',
             'Fecha' => 'required|date',
             'Total' => 'required|numeric',
-            'detalles' => 'required|array',
+            'detalles' => 'required|array|min:1',
             'detalles.*.ProductoID' => 'required|integer',
-            'detalles.*.Cantidad' => 'required|integer',
-            'detalles.*.PrecioUnitario' => 'required|numeric',
-            'detalles.*.Subtotal' => 'required|numeric',
+            'detalles.*.Cantidad' => 'required|integer|min:1',
+            'detalles.*.PrecioUnitario' => 'required|numeric|min:0',
+            'detalles.*.Subtotal' => 'required|numeric|min:0',
         ]);
 
         $factura = Factura::findOrFail($id);
-        $factura->update($request->all());
+        $factura->update([
+            'ClienteID' => $request->ClienteID,
+            'EmpleadoID' => $request->EmpleadoID,
+            'Fecha' => $request->Fecha,
+            'Total' => $request->Total,
+        ]);
 
-        // Actualizar detalles de la factura
-        DetalleFactura::where('FacturaID', $id)->delete(); // Eliminar detalles antiguos
+        // Primero eliminar detalles antiguos
+        DetalleFactura::where('FacturaID', $id)->delete();
+
+        // Insertar los nuevos detalles
         foreach ($request->detalles as $detalle) {
             DetalleFactura::create([
                 'FacturaID' => $factura->FacturaID,
@@ -106,8 +117,11 @@ class FacturaController extends Controller
             abort(403);
         }
 
+        // Primero elimina los detalles relacionados
+        DetalleFactura::where('FacturaID', $id)->delete();
+
+        // Luego elimina la factura
         Factura::findOrFail($id)->delete();
-        DetalleFactura::where('FacturaID', $id)->delete(); // Eliminar detalles relacionados
 
         return redirect()->route('facturas.index')->with('success', 'Factura eliminada correctamente.');
     }

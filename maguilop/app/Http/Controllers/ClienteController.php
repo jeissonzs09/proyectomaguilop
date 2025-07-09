@@ -55,16 +55,14 @@ class ClienteController extends Controller
 
     public function update(Request $request, $id)
     {
-     
         $request->validate([
-    'NombreCliente' => 'required|string|max:255',
-    'PersonaID' => 'required|integer|exists:persona,PersonaID',
-    'Categoria' => 'nullable|string|max:100',
-    'FechaRegistro' => 'required|date',
-    'Estado' => 'required|in:Activo,Inactivo',
-    'Notas' => 'nullable|string',
-]);
-
+            'NombreCliente' => 'required|string|max:255',
+            'PersonaID' => 'required|integer|exists:persona,PersonaID',
+            'Categoria' => 'nullable|string|max:100',
+            'FechaRegistro' => 'required|date',
+            'Estado' => 'required|in:Activo,Inactivo',
+            'Notas' => 'nullable|string',
+        ]);
 
         $cliente = Cliente::findOrFail($id);
         $cliente->update($request->all());
@@ -72,14 +70,16 @@ class ClienteController extends Controller
         return redirect()->route('clientes.index')->with('success', 'Cliente actualizado correctamente.');
     }
 
-    public function destroy($id)
-    {
-        if (!PermisosHelper::tienePermiso('Clientes', 'eliminar')) {
-            abort(403);
-        }
-
-        Cliente::findOrFail($id)->delete();
+public function destroy($id)
+{
+    try {
+        $cliente = \App\Models\Cliente::findOrFail($id);
+        $cliente->delete();
 
         return redirect()->route('clientes.index')->with('success', 'Cliente eliminado correctamente.');
+    } catch (\Illuminate\Database\QueryException $e) {
+        return redirect()->route('clientes.index')->with('error', 'No se puede eliminar el cliente porque tiene pedidos asociados.');
     }
+}
+
 }

@@ -7,8 +7,6 @@
         <form action="{{ route('clientes.store') }}" method="POST">
             @csrf
 
-          
-
             <div class="mb-4">
                 <label for="NombreCliente" class="block text-gray-700 font-bold mb-2">Nombre del Cliente</label>
                 <input type="text" name="NombreCliente" id="NombreCliente" placeholder="Ej: Juan Pérez"
@@ -23,8 +21,12 @@
 
             <div class="mb-4">
                 <label for="Categoria" class="block text-gray-700 font-bold mb-2">Categoría</label>
-                <input type="text" name="Categoria" id="Categoria" placeholder="Ej: Regular"
-                    class="w-full border rounded px-3 py-2" required>
+                <select name="Categoria" id="Categoria" class="w-full border rounded px-3 py-2" required>
+                    <option value="" disabled selected>Selecciona una categoría</option>
+                    <option value="Regular">Regular</option>
+                    <option value="Premium">Premium</option>
+                    <option value="VIP">VIP</option>
+                </select>
             </div>
 
             <div class="mb-4">
@@ -47,7 +49,7 @@
                     class="w-full border rounded px-3 py-2" placeholder="Notas adicionales"></textarea>
             </div>
 
-           <div class="flex justify-between">
+            <div class="flex justify-between">
                 <a href="{{ route('clientes.index') }}"
                     class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
                     ❌ Cancelar

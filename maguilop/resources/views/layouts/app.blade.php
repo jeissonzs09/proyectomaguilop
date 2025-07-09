@@ -9,9 +9,16 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+
+
 <body class="bg-gray-100 text-gray-800 font-sans">
 
-<div class="flex min-h-screen">
+<div class="flex h-screen overflow-hidden">
 
     {{-- SIDEBAR --}}
     <aside class="w-64 bg-gradient-to-b from-orange-700 to-orange-500 text-white flex flex-col shadow-lg">
@@ -209,10 +216,10 @@
     </aside>
 
     {{-- CONTENIDO PRINCIPAL --}}
-    <div class="flex-1 flex flex-col">
+<div class="flex-1 flex flex-col overflow-hidden">
 
         {{-- ENCABEZADO --}}
-        <header class="bg-gradient-to-r from-orange-600 to-orange-400 text-white shadow px-6 py-4 flex justify-between items-center">
+<header class="bg-gradient-to-r from-orange-600 to-orange-400 text-white shadow px-6 py-4 flex justify-between items-center sticky top-0 z-40">
             <h1 class="text-lg font-semibold">{{ $header ?? 'Panel' }}</h1>
             <div x-data="{ open: false }" class="relative">
                 <button @click="open = !open" class="flex items-center space-x-2 hover:bg-orange-500 px-3 py-2 rounded">
@@ -240,12 +247,12 @@
         </header>
 
         {{-- CONTENIDO --}}
-        <main class="p-6 flex-1">
+        <main class="p-6 flex-1 overflow-y-auto">
             {{ $slot }}
         </main>
     </div>
 </div>
-
+@stack('scripts')
 </body>
 </html>
 

@@ -6,13 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Empleado extends Model
 {
-    protected $table = 'empleado'; // Nombre de la tabla
-
-
-
-    protected $primaryKey = 'EmpleadoID'; // Cambia a tu clave primaria
-
-    public $timestamps = true; // Cambia a false si no usas timestamps
+    protected $table = 'empleado';
+    protected $primaryKey = 'EmpleadoID';
+    public $timestamps = true;
 
     protected $fillable = [
         'PersonaID',
@@ -22,6 +18,8 @@ class Empleado extends Model
         'Salario',
     ];
 
-    
+    public function persona()
+    {
+        return $this->belongsTo(\App\Models\Persona::class, 'PersonaID');
+    }
 }
-
