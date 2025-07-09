@@ -38,13 +38,29 @@ public function create()
 
 public function store(Request $request)
 {
-    $request->validate([
-        'NombreUsuario' => 'required|string|unique:usuario,NombreUsuario',
-        'TipoUsuario' => 'required|string',
-        'password' => 'required|string|min:6',
-        'EmpleadoID' => 'required|integer|exists:empleado,EmpleadoID',
-        'correo' => 'required|email|unique:usuario,CorreoElectronico',
-    ]);
+    if (!PermisosHelper::tienePermiso('Usuarios', 'crear')) {
+        abort(403, 'No tienes permiso para crear usuarios.');
+    }
+
+$request->validate([
+    'NombreUsuario' => 'required|string|unique:usuario,NombreUsuario',
+    'TipoUsuario' => 'required|string',
+    'correo' => 'required|email|unique:usuario,CorreoElectronico',
+    'password' => [
+        'required',
+        'string',
+        'min:8',
+        'regex:/[^A-Za-z0-9]/', // al menos un carácter especial
+    ],
+    'EmpleadoID' => 'required|integer|exists:empleado,EmpleadoID',
+], [
+    'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+    'password.regex' => 'La contraseña debe contener al menos un carácter especial.',
+    'password.required' => 'El campo contraseña es obligatorio.',
+    'correo.unique' => 'Este correo ya está registrado.',
+    'NombreUsuario.unique' => 'El nombre de usuario ya está en uso.',
+]);
+
 
     DB::table('usuario')->insert([
         'NombreUsuario' => $request->NombreUsuario,
@@ -60,6 +76,7 @@ public function store(Request $request)
 
     return redirect()->route('usuarios.index')->with('success', 'Usuario creado correctamente.');
 }
+
 
 public function edit($id)
 {
