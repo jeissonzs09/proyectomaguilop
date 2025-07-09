@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Factura;
 use App\Models\DetalleFactura;
 use App\Helpers\PermisosHelper;
+use App\Models\Cliente;
+use App\Models\Empleado;
+use App\Models\Producto;
 
 class FacturaController extends Controller
 {
@@ -15,18 +18,18 @@ class FacturaController extends Controller
             abort(403, 'No tienes permiso para ver esta sección.');
         }
 
-        $facturas = Factura::with('detalles')->get(); // Cargar detalles relacionados
-        return view('facturas.index', compact('facturas'));
+        $facturas = Factura::with(['cliente', 'empleado.persona', 'producto'])->get();
+    return view('facturas.index', compact('facturas'));
     }
 
     public function create()
-    {
-        if (!PermisosHelper::tienePermiso('Factura', 'crear')) {
-            abort(403);
-        }
+{
+    $clientes = Cliente::all();
+    $empleados = Empleado::with('persona')->get();
+    $productos = Producto::all();
 
-        return view('facturas.create');
-    }
+    return view('facturas.create', compact('clientes', 'empleados', 'productos'));
+}
 
     public function store(Request $request)
     {
@@ -63,14 +66,14 @@ class FacturaController extends Controller
     }
 
     public function edit($id)
-    {
-        if (!PermisosHelper::tienePermiso('Factura', 'editar')) {
-            abort(403);
-        }
+{
+    $factura = Factura::findOrFail($id);
+    $clientes = Cliente::all();
+    $empleados = Empleado::with('persona')->get();
+    $productos = Producto::all();
 
-        $factura = Factura::with('detalles')->findOrFail($id);
-        return view('facturas.edit', compact('factura'));
-    }
+    return view('facturas.edit', compact('factura', 'clientes', 'empleados', 'productos'));
+}
 
     public function update(Request $request, $id)
     {

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\PedidoDetalle;
 
 class Pedido extends Model
 {
@@ -19,10 +20,32 @@ class Pedido extends Model
     ];
 
     public function detalles()
-    {
-        // Agrega el tercer parámetro 'PedidoID' explícito para que quede claro la relación
-  return $this->hasMany(DetallePedido::class, 'PedidoID');
+{
+    return $this->hasMany(PedidoDetalle::class, 'PedidoID', 'PedidoID');
+}
 
 
-    }
+
+    public function cliente()
+{
+    return $this->belongsTo(Cliente::class, 'ClienteID', 'ClienteID');
+}
+
+public function empleado()
+{
+    return $this->belongsTo(Empleado::class, 'EmpleadoID', 'EmpleadoID');
+}
+
+public function producto()
+{
+    return $this->hasOneThrough(
+        \App\Models\Producto::class,
+        \App\Models\PedidoDetalle::class,
+        'PedidoID',       // Foreign key en pedido_detalle
+        'ProductoID',     // Foreign key en producto
+        'PedidoID',       // Local key en pedido
+        'ProductoID'      // Local key en pedido_detalle
+    );
+}
+
 }

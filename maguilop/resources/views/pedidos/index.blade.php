@@ -22,12 +22,12 @@
                 <thead class="bg-orange-500 text-white text-sm uppercase">
                     <tr>
                         <th class="px-4 py-3 text-center">Pedido ID</th>
-                        <th class="px-4 py-3 text-center">Cliente ID</th>
-                        <th class="px-4 py-3 text-center">Empleado ID</th>
+                        <th class="px-4 py-3 text-center">Cliente</th>
+                        <th class="px-4 py-3 text-center">Empleado</th>
                         <th class="px-4 py-3 text-center">Fecha Pedido</th>
                         <th class="px-4 py-3 text-center">Fecha Entrega</th>
                         <th class="px-4 py-3 text-center">Estado</th>
-                        <th class="px-4 py-3 text-center">Producto ID</th>
+                        <th class="px-4 py-3 text-center">Producto</th>
                         <th class="px-4 py-3 text-center">Cantidad</th>
                         <th class="px-4 py-3 text-right">Precio Unitario</th>
                         <th class="px-4 py-3 text-right">Subtotal</th>
@@ -39,12 +39,17 @@
                         @foreach($pedido->detalles as $detalle)
                             <tr class="hover:bg-gray-50 transition">
                                 <td class="px-4 py-2 text-center">{{ $pedido->PedidoID }}</td>
-                                <td class="px-4 py-2 text-center">{{ $pedido->ClienteID }}</td>
-                                <td class="px-4 py-2 text-center">{{ $pedido->EmpleadoID }}</td>
+                                <td>{{ $pedido->cliente->NombreCliente ?? '—' }}</td>
+                                <td>{{ $pedido->empleado->persona->NombreCompleto ?? '—' }}</td>
                                 <td class="px-4 py-2 text-center">{{ $pedido->FechaPedido }}</td>
                                 <td class="px-4 py-2 text-center">{{ $pedido->FechaEntrega }}</td>
                                 <td class="px-4 py-2 text-center">{{ $pedido->Estado }}</td>
-                                <td class="px-4 py-2 text-center">{{ $detalle->ProductoID }}</td>
+                                <td>
+    @foreach ($pedido->detalles as $detalle)
+        {{ $detalle->producto->NombreProducto ?? '—' }}<br>
+    @endforeach
+</td>
+
                                 <td class="px-4 py-2 text-center">{{ $detalle->Cantidad }}</td>
                                 <td class="px-4 py-2 text-right">L. {{ number_format($detalle->PrecioUnitario, 2) }}</td>
                                 <td class="px-4 py-2 text-right">L. {{ number_format($detalle->Subtotal, 2) }}</td>

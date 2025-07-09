@@ -39,12 +39,12 @@
                             <tr class="hover:bg-gray-50 transition">
                                 @if ($loop->first)
                                     <td class="px-4 py-2 text-center" rowspan="{{ $factura->detalles->count() }}">{{ $factura->FacturaID }}</td>
-                                    <td class="px-4 py-2 text-center" rowspan="{{ $factura->detalles->count() }}">{{ $factura->ClienteID }}</td>
-                                    <td class="px-4 py-2 text-center" rowspan="{{ $factura->detalles->count() }}">{{ $factura->EmpleadoID }}</td>
+                                    <td class="px-4 py-2 text-center" rowspan="{{ $factura->detalles->count() }}">{{ $factura->cliente->NombreCliente ?? '—' }}</td>
+                                    <td class="px-4 py-2 text-center" rowspan="{{ $factura->detalles->count() }}">{{ $factura->empleado->persona->NombreCompleto ?? '—' }}</td>
                                     <td class="px-4 py-2 text-center" rowspan="{{ $factura->detalles->count() }}">{{ $factura->Fecha }}</td>
                                     <td class="px-4 py-2 text-center" rowspan="{{ $factura->detalles->count() }}">L. {{ number_format($factura->Total, 2) }}</td>
                                 @endif
-                                <td class="px-4 py-2 text-center">{{ $detalle->ProductoID }}</td>
+                                <td class="px-4 py-2 text-center">{{ $detalle->producto->NombreProducto ?? '—' }}</td>
                                 <td class="px-4 py-2 text-center">{{ $detalle->Cantidad }}</td>
                                 <td class="px-4 py-2 text-right">L. {{ number_format($detalle->PrecioUnitario, 2) }}</td>
                                 <td class="px-4 py-2 text-right">L. {{ number_format($detalle->Subtotal, 2) }}</td>

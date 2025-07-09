@@ -24,4 +24,20 @@ class Factura extends Model
         return $this->hasMany(DetalleFactura::class, 'FacturaID', 'FacturaID');
         // El tercer parámetro garantiza coincidencia correcta si la clave primaria es personalizada
     }
+
+    public function cliente()
+{
+    return $this->belongsTo(Cliente::class, 'ClienteID');
+}
+
+public function empleado()
+{
+    return $this->belongsTo(Empleado::class, 'EmpleadoID');
+}
+
+public function producto()
+{
+    return $this->belongsTo(Producto::class, 'ProductoID');
+}
+
 }

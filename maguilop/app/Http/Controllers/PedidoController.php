@@ -9,14 +9,19 @@ class PedidoController extends Controller
 {
     public function index()
     {
-        $pedidos = Pedido::paginate(10);
+        $pedidos = Pedido::with(['cliente', 'empleado.persona', 'producto'])->paginate(10);
         return view('pedidos.index', compact('pedidos'));
     }
 
-    public function create()
-    {
-        return view('pedidos.create');
-    }
+public function create()
+{
+    $clientes = \App\Models\Cliente::all();
+    $empleados = \App\Models\Empleado::with('persona')->get();
+    $productos = \App\Models\Producto::all();
+
+    return view('pedidos.create', compact('clientes', 'empleados', 'productos'));
+}
+
 
     public function store(Request $request)
     {
@@ -37,6 +42,7 @@ class PedidoController extends Controller
             'FechaPedido' => $request->FechaPedido,
             'FechaEntrega' => $request->FechaEntrega,
             'Estado' => $request->Estado,
+            
         ]);
 
         $pedido->detalles()->create([
@@ -49,11 +55,16 @@ class PedidoController extends Controller
         return redirect()->route('pedidos.index')->with('success', 'Pedido creado correctamente.');
     }
 
-    public function edit($id)
-    {
-        $pedido = Pedido::findOrFail($id);
-        return view('pedidos.edit', compact('pedido'));
-    }
+public function edit($id)
+{
+    $pedido = \App\Models\Pedido::with('detalles')->findOrFail($id);
+    $clientes = \App\Models\Cliente::all();
+    $empleados = \App\Models\Empleado::with('persona')->get();
+    $productos = \App\Models\Producto::all();
+
+    return view('pedidos.edit', compact('pedido', 'clientes', 'empleados', 'productos'));
+}
+
 
     public function update(Request $request, $id)
     {
@@ -76,6 +87,7 @@ class PedidoController extends Controller
         $pedido->FechaPedido = $request->FechaPedido;
         $pedido->FechaEntrega = $request->FechaEntrega;
         $pedido->Estado = $request->Estado;
+        $pedidos = Pedido::with(['cliente', 'empleado.persona', 'producto'])->get();
         $pedido->save();
 
         $pedido->detalles()->delete();

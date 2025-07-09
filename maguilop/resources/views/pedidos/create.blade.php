@@ -7,16 +7,28 @@
             @csrf
 
             <div class="mb-4">
-                <label for="ClienteID" class="block text-gray-700 font-bold mb-2">Cliente ID</label>
-                <input type="number" name="ClienteID" id="ClienteID" placeholder="Ej: 1"
-                    class="w-full border rounded px-3 py-2" required>
-            </div>
+    <label for="ClienteID" class="block text-gray-700 font-bold mb-2">Cliente</label>
+    <select name="ClienteID" id="ClienteID" class="w-full border rounded px-3 py-2" required>
+        <option value="">Seleccione un cliente</option>
+        @foreach ($clientes as $cliente)
+            <option value="{{ $cliente->ClienteID }}">{{ $cliente->NombreCliente }}</option>
+        @endforeach
+    </select>
+</div>
+
 
             <div class="mb-4">
-                <label for="EmpleadoID" class="block text-gray-700 font-bold mb-2">Empleado ID</label>
-                <input type="number" name="EmpleadoID" id="EmpleadoID" placeholder="Ej: 2"
-                    class="w-full border rounded px-3 py-2" required>
-            </div>
+    <label for="EmpleadoID" class="block text-gray-700 font-bold mb-2">Empleado</label>
+    <select name="EmpleadoID" id="EmpleadoID" class="w-full border rounded px-3 py-2" required>
+        <option value="">Seleccione un empleado</option>
+        @foreach ($empleados as $empleado)
+            <option value="{{ $empleado->EmpleadoID }}">
+                {{ $empleado->persona->NombreCompleto ?? 'Empleado #' . $empleado->EmpleadoID }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
 
             <div class="mb-4">
                 <label for="FechaPedido" class="block text-gray-700 font-bold mb-2">Fecha Pedido</label>
@@ -45,10 +57,17 @@
             <h3 class="text-lg font-bold mt-6">Detalles del Pedido</h3>
 
             <div class="mb-4">
-                <label for="ProductoID" class="block text-gray-700 font-bold mb-2">Producto ID</label>
-                <input type="number" name="ProductoID" id="ProductoID" placeholder="Ej: 5"
-                    class="w-full border rounded px-3 py-2" required>
-            </div>
+    <label for="ProductoID" class="block text-gray-700 font-bold mb-2">Producto</label>
+    <select name="ProductoID" id="ProductoID" class="w-full border rounded px-3 py-2" required>
+        <option value="">Seleccione un producto</option>
+        @foreach ($productos as $producto)
+            <option value="{{ $producto->ProductoID }}" data-precio="{{ $producto->PrecioVenta }}">
+                {{ $producto->NombreProducto }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
 
             <div class="mb-4">
                 <label for="Cantidad" class="block text-gray-700 font-bold mb-2">Cantidad</label>

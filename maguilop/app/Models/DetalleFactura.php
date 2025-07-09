@@ -17,4 +17,9 @@ class DetalleFactura extends Model
         'PrecioUnitario',
         'Subtotal',
     ];
+
+    public function producto()
+{
+    return $this->belongsTo(\App\Models\Producto::class, 'ProductoID');
+}
 }
