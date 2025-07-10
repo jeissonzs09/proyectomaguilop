@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Empleado;
 use App\Helpers\PermisosHelper;
+ use App\Models\Persona;
 
 class EmpleadoController extends Controller
 {
@@ -14,33 +15,45 @@ class EmpleadoController extends Controller
             abort(403, 'No tienes permiso para ver esta sección.');
         }
 
-        $empleados = Empleado::all();
-        return view('empleados.index', compact('empleados'));
+        $empleados = Empleado::with('persona')->get();
+
+    return view('empleados.index', compact('empleados'));
     }
 
-    public function create()
-    {
-        if (!PermisosHelper::tienePermiso('Empleados', 'crear')) {
-            abort(403);
-        }
+public function create()
+{
+    // Obtiene todas las personas
+    $personas = Persona::all();
 
-        return view('empleados.create');
-    }
+    // Pasa la colección a la vista
+    return view('empleados.create', compact('personas'));
+}
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'PersonaID' => 'required|integer|exists:persona,PersonaID', // Asegúrate de que este nombre sea correcto
-            'Departamento' => 'required|string|max:255',
-            'Cargo' => 'required|string|max:255',
-            'FechaContratacion' => 'required|date',
-            'Salario' => 'required|numeric|min:0',
-        ]);
 
-        Empleado::create($request->all());
 
-        return redirect()->route('empleados.index')->with('success', 'Empleado registrado correctamente.');
-    }
+public function store(Request $request)
+{
+    $messages = [
+        'PersonaID.unique' => 'La persona ya está registrada como empleado.',
+    ];
+
+    $data = $request->validate([
+        'PersonaID'         => 'required|integer|exists:persona,PersonaID|unique:empleado,PersonaID',
+        'Departamento'      => 'required|string|max:255',
+        'Cargo'             => 'required|string|max:255',
+        'FechaContratacion' => 'required|date',
+        'Salario'           => 'required|numeric|min:0',
+    ], $messages);
+
+    Empleado::create($data);
+
+    return redirect()
+        ->route('empleados.index')
+        ->with('success', 'Empleado registrado correctamente.');
+}
+
+
+
 
     public function edit($id)
     {

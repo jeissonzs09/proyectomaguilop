@@ -18,8 +18,9 @@ class Empleado extends Model
         'Salario',
     ];
 
-    public function persona()
+   public function persona()
     {
-        return $this->belongsTo(\App\Models\Persona::class, 'PersonaID');
+        return $this->belongsTo(Persona::class, 'PersonaID', 'PersonaID');
     }
+
 }

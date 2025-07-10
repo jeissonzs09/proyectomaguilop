@@ -7,44 +7,62 @@
         <form action="{{ route('empleados.store') }}" method="POST">
             @csrf
 
-
+            <!-- SELECT de Personas -->
             <div class="mb-4">
-                <label for="PersonaID" class="block text-gray-700 font-bold mb-2">Persona ID</label>
-                <input type="number" name="PersonaID" id="PersonaID" placeholder="Ej: 101"
-                    class="w-full border rounded px-3 py-2" required>
+                <label for="PersonaID" class="block text-gray-700 font-bold mb-2">
+                    Persona
+                </label>
+                <select name="PersonaID" id="PersonaID"
+                        class="w-full border rounded px-3 py-2" required>
+                    <option value="">-- Selecciona una persona --</option>
+                    @foreach($personas as $persona)
+                        <option value="{{ $persona->PersonaID }}"
+                            {{ old('PersonaID') == $persona->PersonaID ? 'selected' : '' }}>
+                            {{ $persona->Nombre }} {{ $persona->Apellido }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('PersonaID')
+                    <div class="text-red-600 mt-1 text-sm">{{ $message }}</div>
+                @enderror
             </div>
 
+            <!-- Resto de campos -->
             <div class="mb-4">
                 <label for="Departamento" class="block text-gray-700 font-bold mb-2">Departamento</label>
-                <input type="text" name="Departamento" id="Departamento" placeholder="Ej: Sistemas"
-                    class="w-full border rounded px-3 py-2" required>
+                <input type="text" name="Departamento" id="Departamento"
+                       class="w-full border rounded px-3 py-2" required>
             </div>
 
             <div class="mb-4">
                 <label for="Cargo" class="block text-gray-700 font-bold mb-2">Cargo</label>
-                <input type="text" name="Cargo" id="Cargo" placeholder="Ej: Administrador"
-                    class="w-full border rounded px-3 py-2" required>
+                <input type="text" name="Cargo" id="Cargo"
+                       class="w-full border rounded px-3 py-2" required>
             </div>
 
             <div class="mb-4">
-                <label for="FechaContratacion" class="block text-gray-700 font-bold mb-2">Fecha de Contratación</label>
+                <label for="FechaContratacion" class="block text-gray-700 font-bold mb-2">
+                    Fecha de Contratación
+                </label>
                 <input type="date" name="FechaContratacion" id="FechaContratacion"
-                    class="w-full border rounded px-3 py-2" required>
+                       class="w-full border rounded px-3 py-2" required>
             </div>
 
             <div class="mb-6">
-                <label for="Salario" class="block text-gray-700 font-bold mb-2">Salario (Lps.)</label>
-                <input type="number" step="0.01" name="Salario" id="Salario" placeholder="Ej: 25000.00"
-                    class="w-full border rounded px-3 py-2" required>
+                <label for="Salario" class="block text-gray-700 font-bold mb-2">
+                    Salario (Lps.)
+                </label>
+                <input type="number" step="0.01" name="Salario" id="Salario"
+                       class="w-full border rounded px-3 py-2" required>
             </div>
 
             <div class="flex justify-between">
                 <a href="{{ route('empleados.index') }}"
-                    class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+                   class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                     ❌ Cancelar
                 </a>
                 <button type="submit"
-                        style="background-color: #2563eb; color: white; font-weight: bold; padding: 10px 20px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); border: none;">
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     💾 Guardar Empleado
                 </button>
             </div>

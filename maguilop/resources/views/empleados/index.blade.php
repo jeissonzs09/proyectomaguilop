@@ -34,7 +34,7 @@
                 <thead class="bg-orange-500 text-white text-sm uppercase">
                     <tr>
                         <th class="px-4 py-3 text-center">Empleado ID</th>
-                        <th class="px-4 py-3 text-center">Persona ID</th>
+                        <th class="px-4 py-3 text-center">Persona</th>
                         <th class="px-4 py-3 text-center">Departamento</th>
                         <th class="px-4 py-3 text-center">Cargo</th>
                         <th class="px-4 py-3 text-center">Contratación</th>
@@ -46,7 +46,10 @@
                     @foreach($empleados as $empleado)
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-4 py-2 text-center">{{ $empleado->EmpleadoID }}</td>
-                            <td class="px-4 py-2 text-center">{{ $empleado->PersonaID }}</td>
+                            <td>
+                    {{ optional($empleado->persona)->Nombre }}
+                    {{ optional($empleado->persona)->Apellido }}
+                </td>
                             <td class="px-4 py-2 text-center">{{ $empleado->Departamento }}</td>
                             <td class="px-4 py-2 text-center">{{ $empleado->Cargo }}</td>
                             <td class="px-4 py-2 text-center">{{ \Carbon\Carbon::parse($empleado->FechaContratacion)->format('Y-m-d') }}</td>
