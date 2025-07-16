@@ -4,14 +4,47 @@ namespace App\Http\Controllers;
 
 use App\Models\Pedido;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Helpers\PermisosHelper;
 
 class PedidoController extends Controller
 {
-    public function index()
-    {
-        $pedidos = Pedido::with(['cliente', 'empleado.persona', 'producto'])->paginate(10);
-        return view('pedidos.index', compact('pedidos'));
+public function index(Request $request)
+{
+    if (!PermisosHelper::tienePermiso('Pedidos', 'ver')) {
+        abort(403, 'No tienes permiso para ver esta sección.');
     }
+
+    $query = Pedido::with(['cliente', 'empleado.persona', 'producto', 'detalles']);
+
+    if ($request->filled('search')) {
+        $search = $request->search;
+
+        $query->where('FechaPedido', 'LIKE', "%{$search}%")
+              ->orWhere('FechaEntrega', 'LIKE', "%{$search}%")
+              ->orWhere('Estado', 'LIKE', "%{$search}%")
+              ->orWhereHas('cliente', fn($q) =>
+                  $q->where('NombreCliente', 'LIKE', "%{$search}%")
+              )
+              ->orWhereHas('empleado.persona', fn($q) =>
+                  $q->where('Nombre', 'LIKE', "%{$search}%")
+                    ->orWhere('Apellido', 'LIKE', "%{$search}%")
+              )
+              ->orWhereHas('producto', fn($q) =>
+                  $q->where('NombreProducto', 'LIKE', "%{$search}%")
+              )
+              ->orWhereHas('detalles', fn($q) =>
+                  $q->where('Cantidad', 'LIKE', "%{$search}%")
+                    ->orWhere('PrecioUnitario', 'LIKE', "%{$search}%")
+                    ->orWhere('Subtotal', 'LIKE', "%{$search}%")
+              );
+    }
+
+    $pedidos = $query->paginate(5);
+    return view('pedidos.index', compact('pedidos'));
+}
+
+
 
 public function create()
 {
@@ -116,4 +149,38 @@ public function edit($id)
 
         return redirect()->route('pedidos.index')->with('success', 'Pedido eliminado correctamente.');
     }
+
+public function exportarPDF(Request $request)
+{
+$query = Pedido::with(['cliente', 'empleado.persona', 'producto', 'detalles']);
+
+if ($request->filled('search')) {
+    $search = $request->search;
+
+    $query->where('FechaPedido', 'LIKE', "%{$search}%")
+          ->orWhere('FechaEntrega', 'LIKE', "%{$search}%")
+          ->orWhere('Estado', 'LIKE', "%{$search}%")
+          ->orWhereHas('cliente', fn($q) =>
+              $q->where('NombreCliente', 'LIKE', "%{$search}%")
+          )
+          ->orWhereHas('empleado.persona', fn($q) =>
+              $q->where('Nombre', 'LIKE', "%{$search}%")
+                ->orWhere('Apellido', 'LIKE', "%{$search}%")
+          )
+          ->orWhereHas('producto', fn($q) =>
+              $q->where('NombreProducto', 'LIKE', "%{$search}%")
+          )
+          ->orWhereHas('detalles', fn($q) =>
+              $q->where('Cantidad', 'LIKE', "%{$search}%")
+                ->orWhere('PrecioUnitario', 'LIKE', "%{$search}%")
+                ->orWhere('Subtotal', 'LIKE', "%{$search}%")
+          );
+}
+
+    $pedidos = $query->get();
+
+    $pdf = Pdf::loadView('pedidos.pdf', compact('pedidos'))->setPaper('a4', 'landscape');
+    return $pdf->download('pedidos.pdf');
+}
+
 }

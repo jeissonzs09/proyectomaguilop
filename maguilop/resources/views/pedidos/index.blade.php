@@ -9,13 +9,41 @@
         $permisos = \App\Helpers\PermisosHelper::class;
     @endphp
 
-    <div class="p-4">
-        @if($permisos::tienePermiso('Pedidos', 'crear'))
-            <a href="{{ route('pedidos.create') }}"
-               class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow">
-                <i class="fas fa-plus"></i> Nuevo Pedido
-            </a>
-        @endif
+    <div class="flex items-center gap-3 mb-6 flex-wrap">
+    {{-- Crear pedido --}}
+    @if($permisos::tienePermiso('Pedidos', 'crear'))
+        <a href="{{ route('pedidos.create') }}"
+           class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow whitespace-nowrap">
+            <i class="fas fa-plus"></i> Nuevo pedido
+        </a>
+    @endif
+
+    {{-- Exportar PDF --}}
+    <a href="{{ route('pedidos.exportarPDF', ['search' => request('search')]) }}"
+       class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md shadow whitespace-nowrap">
+        <i class="fas fa-file-pdf"></i> Exportar PDF
+    </a>
+
+    {{-- Buscador reactivo con lupa --}}
+    <div class="relative max-w-xs w-full">
+        <input
+            type="text"
+            x-data="{ search: '{{ request('search') }}' }"
+            x-model="search"
+            @input.debounce.500="window.location.href = '?search=' + encodeURIComponent(search)"
+            placeholder="Buscar pedido..."
+            class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200 focus:outline-none text-sm"
+        />
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M21 21l-4.35-4.35m1.44-5.4a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        </div>
+    </div>
+</div>
+
 
         <div class="overflow-x-auto bg-white rounded-lg shadow mt-4">
             <table class="min-w-full text-sm text-gray-800">
@@ -84,8 +112,8 @@
         </div>
 
         <div class="mt-4">
-            {{ $pedidos->links() }}
-        </div>
+    {{ $pedidos->appends(['search' => request('search')])->links() }}
+</div>
     </div>
 </x-app-layout>
 

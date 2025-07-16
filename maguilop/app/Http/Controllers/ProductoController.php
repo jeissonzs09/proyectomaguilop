@@ -6,21 +6,32 @@ use App\Models\Producto;
 use Illuminate\Http\Request;
 use App\Helpers\PermisosHelper;
 use App\Models\Proveedor; // ✅ Correcto
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ProductoController extends Controller
 {
-    public function index()
-    {
-        if (!PermisosHelper::tienePermiso('Productos', 'ver')) {
+    public function index(Request $request)
+{
+    if (!PermisosHelper::tienePermiso('Productos', 'ver')) {
         abort(403, 'No tienes permiso para ver esta sección.');
     }
-        $productos = Producto::paginate(10);
-        return view('producto.index', compact('productos'));
 
-        $productos = Producto::with('proveedor')->get();
-        return view('productos.index', compact('productos'));
+    $query = Producto::with('proveedor');
 
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where('NombreProducto', 'LIKE', "%{$search}%")
+              ->orWhere('Descripcion', 'LIKE', "%{$search}%")
+              ->orWhere('PrecioCompra', 'LIKE', "%{$search}%")
+              ->orWhere('PrecioVenta', 'LIKE', "%{$search}%")
+              ->orWhere('Stock', 'LIKE', "%{$search}%")
+              ->orWhereHas('proveedor', fn($q) => $q->where('ProveedorID', 'LIKE', "%{$search}%"));
     }
+
+    $productos = $query->paginate(5);
+    return view('producto.index', compact('productos'));
+}
+
 
     public function create()
     {
@@ -81,5 +92,28 @@ class ProductoController extends Controller
 
         return redirect()->route('producto.index')->with('success', 'Producto eliminado correctamente.');
     }
+
+public function exportarPDF(Request $request)
+{
+    $query = Producto::with('proveedor');
+
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where('NombreProducto', 'LIKE', "%{$search}%")
+              ->orWhere('DescripcionProducto', 'LIKE', "%{$search}%")
+              ->orWhere('PrecioCompra', 'LIKE', "%{$search}%")
+              ->orWhere('PrecioVenta', 'LIKE', "%{$search}%")
+              ->orWhere('Stock', 'LIKE', "%{$search}%")
+              ->orWhereHas('proveedor', fn($q) => $q->where('NombreProveedor', 'LIKE', "%{$search}%"));
+    }
+
+    $productos = $query->get();
+
+    $pdf = Pdf::loadView('producto.pdf', compact('productos'))
+              ->setPaper('a4', 'landscape');
+
+    return $pdf->download('productos.pdf');
+}
+
 }
 

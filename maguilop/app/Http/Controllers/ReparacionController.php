@@ -7,6 +7,7 @@ use App\Models\Reparacion;
 use App\Helpers\PermisosHelper;
 use App\Models\Cliente; // ✅ Correcto
 use App\Models\Producto;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class ReparacionController extends Controller
@@ -18,32 +19,31 @@ public function index(Request $request)
         abort(403, 'No tienes permiso para ver esta sección.');
     }
 
-    // ⚠️ importante: el paginado se hace sobre el modelo Reparacion
     $query = Reparacion::query()
         ->join('cliente', 'reparacion.ClienteID', '=', 'cliente.ClienteID')
         ->join('producto', 'reparacion.ProductoID', '=', 'producto.ProductoID')
-        ->select('reparacion.*'); // evita conflictos por columnas repetidas
+        ->select('reparacion.*'); // 👈 evita conflictos por columnas duplicadas
 
-    if ($request->has('search')) {
+    if ($request->filled('search')) {
         $search = $request->search;
 
-        $query->whereRaw("
-    CONCAT_WS(' ',
-        ReparacionID,
-        cliente.NombreCliente,
-        producto.NombreProducto,
-        FechaEntrada,
-        FechaSalida,
-        reparacion.Estado,
-        DescripcionProblema,
-        Costo
-    ) LIKE ?", ["%{$search}%"]);
+        $query->whereRaw("CONCAT_WS(' ',
+            ReparacionID,
+            cliente.NombreCliente,
+            producto.NombreProducto,
+            FechaEntrada,
+            FechaSalida,
+            reparacion.Estado,
+            DescripcionProblema,
+            Costo
+        ) LIKE ?", ["%{$search}%"]);
     }
 
-    $reparaciones = $query->with(['cliente', 'producto'])->paginate(5);
+    $reparaciones = $query->paginate(10); // 👈 paginación de 5 registros
 
     return view('reparaciones.index', compact('reparaciones'));
 }
+
 
 
 
@@ -113,4 +113,37 @@ public function index(Request $request)
         Reparacion::findOrFail($id)->delete();
         return redirect()->route('reparaciones.index')->with('success', 'Reparación eliminada correctamente.');
     }
+
+public function exportarPDF(Request $request)
+{
+    $query = Reparacion::with(['cliente', 'producto']);
+
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->whereHas('cliente', fn($q) => $q->where('NombreCliente', 'LIKE', "%{$search}%"))
+              ->orWhereHas('producto', fn($q) => $q->where('NombreProducto', 'LIKE', "%{$search}%"))
+              ->orWhere('DescripcionProblema', 'LIKE', "%{$search}%");
+    }
+
+    $reparaciones = $query->get();
+
+    $pdf = Pdf::loadView('reparaciones.pdf', compact('reparaciones'))
+              ->setPaper('a4', 'landscape');
+
+    return $pdf->download('reparaciones.pdf');
 }
+
+
+
+    public function show($id)
+{
+    if (!PermisosHelper::tienePermiso('Reparaciones', 'ver')) {
+        abort(403, 'No tienes permiso para ver esta reparación.');
+    }
+
+    $reparacion = Reparacion::with(['cliente', 'producto'])->findOrFail($id);
+
+    return view('reparaciones.show', compact('reparacion'));
+}
+}
+

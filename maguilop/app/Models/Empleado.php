@@ -23,4 +23,6 @@ class Empleado extends Model
         return $this->belongsTo(Persona::class, 'PersonaID', 'PersonaID');
     }
 
+    
+
 }

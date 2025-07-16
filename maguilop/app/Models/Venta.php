@@ -18,21 +18,21 @@ class Venta extends Model
         'TotalVenta',
     ];
 
-    // Relación con Cliente
-    public function cliente()
-    {
-        return $this->belongsTo(\App\Models\Cliente::class, 'ClienteID');
-    }
-
-    // Relación con Empleado
-    public function empleado()
-    {
-        return $this->belongsTo(\App\Models\Empleado::class, 'EmpleadoID');
-    }
 
 public function producto()
 {
     return $this->belongsTo(\App\Models\Producto::class, 'ProductoID');
 }
+
+public function cliente()
+{
+    return $this->belongsTo(Cliente::class, 'ClienteID');
+}
+
+public function empleado()
+{
+    return $this->belongsTo(Empleado::class, 'EmpleadoID');
+}
+
 
 }

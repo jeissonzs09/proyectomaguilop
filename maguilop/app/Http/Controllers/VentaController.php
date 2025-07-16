@@ -7,15 +7,41 @@ use Illuminate\Http\Request;
 use App\Models\Cliente;
 use App\Models\Empleado;
 use App\Models\Producto;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Helpers\PermisosHelper;
 
 
 class VentaController extends Controller
 {
-public function index()
+public function index(Request $request)
 {
-    $ventas = Venta::with(['cliente', 'empleado.persona', 'producto'])->get();
+    if (!PermisosHelper::tienePermiso('Ventas', 'ver')) {
+        abort(403, 'No tienes permiso para ver esta sección.');
+    }
+
+    $query = Venta::with(['cliente', 'empleado.persona', 'producto']);
+
+    if ($request->filled('search')) {
+        $search = $request->search;
+
+        $query->where('FechaVenta', 'LIKE', "%{$search}%")
+              ->orWhere('TotalVenta', 'LIKE', "%{$search}%")
+              ->orWhereHas('cliente', fn($q) =>
+                  $q->where('NombreCliente', 'LIKE', "%{$search}%")
+              )
+              ->orWhereHas('empleado.persona', fn($q) =>
+                  $q->where('Nombre', 'LIKE', "%{$search}%")
+                    ->orWhere('Apellido', 'LIKE', "%{$search}%")
+              )
+              ->orWhereHas('producto', fn($q) =>
+                  $q->where('NombreProducto', 'LIKE', "%{$search}%")
+              );
+    }
+
+    $ventas = $query->paginate(5);
     return view('ventas.index', compact('ventas'));
 }
+
 
 public function create()
 {
@@ -77,5 +103,32 @@ $request->validate([
 
     return redirect()->route('ventas.index')->with('success', 'Venta eliminada correctamente.');
 }
+
+
+public function exportarPDF(Request $request)
+{
+    $query = Venta::with(['cliente', 'empleado.persona', 'producto'])->get();
+
+    if ($request->filled('search')) {
+        $search = $request->search;
+
+        $query->where('FechaVenta', 'LIKE', "%{$search}%")
+              ->orWhere('TotalVenta', 'LIKE', "%{$search}%")
+              ->orWhereHas('cliente', fn($q) => $q->where('NombreCliente', 'LIKE', "%{$search}%"))
+              ->orWhereHas('empleado.persona', fn($q) =>
+                  $q->where('Nombre', 'LIKE', "%{$search}%")
+                    ->orWhere('Apellido', 'LIKE', "%{$search}%")
+              )
+              ->orWhereHas('producto', fn($q) => $q->where('NombreProducto', 'LIKE', "%{$search}%"));
+    }
+
+    $ventas = $query->get();
+
+    $pdf = Pdf::loadView('ventas.pdf', compact('ventas'))->setPaper('a4', 'landscape');
+    return $pdf->download('ventas.pdf');
+}
+
+
+
 
 }

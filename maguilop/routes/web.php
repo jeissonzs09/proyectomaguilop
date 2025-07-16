@@ -29,6 +29,17 @@ use App\Http\Controllers\EmpresaController;
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('usuarios', UsuarioController::class);
+    Route::get('/reparaciones/exportar-pdf', [ReparacionController::class, 'exportarPDF'])
+         ->name('reparaciones.exportarPDF');
+         Route::get('/producto/exportar-pdf', [ProductoController::class, 'exportarPDF'])
+        ->name('producto.exportarPDF');
+        Route::get('/ventas/exportar-pdf', [VentaController::class, 'exportarPDF'])
+     ->name('ventas.exportarPDF');
+     Route::get('/pedidos/exportar-pdf', [PedidoController::class, 'exportarPDF'])
+     ->name('pedidos.exportarPDF');
+     Route::get('/facturas/exportar-pdf', [FacturaController::class, 'exportarPDF'])
+     ->name('facturas.exportarPDF');
+
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -182,7 +193,12 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 
     Route::resource('empresa', EmpresaController::class);
 
+        
 
+    Route::get('/test-pdf', function () {
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHtml('<h1 style="color: navy">PDF generado correctamente</h1><p>¡Hola, Jeisson!</p>');
+    return $pdf->download('test.pdf');
+});
 
 
 require __DIR__.'/auth.php';

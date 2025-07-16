@@ -11,23 +11,53 @@
 
     <div class="p-4">
 
-<div class="flex items-center gap-3 mb-6 flex-wrap">
-    {{-- Botón a la izquierda --}}
-    @if($permisos::tienePermiso('Reparaciones', 'crear'))
-        <a href="{{ route('reparaciones.create') }}"
-           class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow whitespace-nowrap">
-            <i class="fas fa-plus"></i> Nueva reparación
-        </a>
-    @endif
+    <style>
+    /* Enlaces normales */
+    .pagination .page-link {
+        color: #f97316; /* Naranja */
+        border: 1px solid #f97316;
+    }
 
-    {{-- Buscador con ícono de lupa integrado --}}
+    /* Hover */
+    .pagination .page-link:hover {
+        background-color: #f97316;
+        color: white;
+        border-color: #f97316;
+    }
+
+    /* Página activa */
+    .pagination .active .page-link {
+        background-color: #f97316;
+        border-color: #f97316;
+        color: white;
+    }
+</style>
+
+
+
+<div class="flex flex-wrap justify-between items-center mb-6">
+    <div class="flex items-center gap-3">
+        @if($permisos::tienePermiso('Ventas', 'crear'))
+            <a href="{{ route('ventas.create') }}"
+               class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow whitespace-nowrap">
+                <i class="fas fa-plus"></i> Nueva venta
+            </a>
+        @endif
+
+        <a href="{{ route('ventas.exportarPDF', ['search' => request('search')]) }}"
+           class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md shadow whitespace-nowrap">
+            <i class="fas fa-file-pdf"></i> Exportar PDF
+        </a>
+    </div>
+
+    {{-- Buscador alineado a la derecha --}}
     <div class="relative max-w-xs w-full">
         <input
             type="text"
             x-data="{ search: '{{ request('search') }}' }"
             x-model="search"
             @input.debounce.500="window.location.href = '?search=' + encodeURIComponent(search)"
-            placeholder="Buscar reparación..."
+            placeholder="Buscar venta..."
             class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200 focus:outline-none text-sm"
         />
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -39,6 +69,7 @@
         </div>
     </div>
 </div>
+
 
 
 
@@ -99,6 +130,9 @@
                 </tbody>
             </table>
         </div>
+                    <div class="mt-4">
+    {{ $reparaciones->appends(['search' => request('search')])->links() }}
+</div>
     </div>
 </x-app-layout>
 

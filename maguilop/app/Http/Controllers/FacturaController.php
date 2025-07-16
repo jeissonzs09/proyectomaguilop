@@ -9,18 +9,44 @@ use App\Helpers\PermisosHelper;
 use App\Models\Cliente;
 use App\Models\Empleado;
 use App\Models\Producto;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class FacturaController extends Controller
 {
-    public function index()
-    {
-        if (!PermisosHelper::tienePermiso('Factura', 'ver')) {
-            abort(403, 'No tienes permiso para ver esta sección.');
-        }
-
-        $facturas = Factura::with(['cliente', 'empleado.persona', 'producto'])->get();
-    return view('facturas.index', compact('facturas'));
+public function index(Request $request)
+{
+    if (!PermisosHelper::tienePermiso('Factura', 'ver')) {
+        abort(403, 'No tienes permiso para ver esta sección.');
     }
+
+    $query = Factura::with(['cliente', 'empleado.persona', 'producto', 'detalles']);
+
+    if ($request->filled('search')) {
+        $search = $request->search;
+
+        $query->where('Fecha', 'LIKE', "%{$search}%")
+              ->orWhere('Total', 'LIKE', "%{$search}%")
+              ->orWhereHas('cliente', fn($q) =>
+                  $q->where('NombreCliente', 'LIKE', "%{$search}%")
+              )
+              ->orWhereHas('empleado.persona', fn($q) =>
+                  $q->where('Nombre', 'LIKE', "%{$search}%")
+                    ->orWhere('Apellido', 'LIKE', "%{$search}%")
+              )
+              ->orWhereHas('detalles.producto', fn($q) =>
+    $q->where('NombreProducto', 'LIKE', "%{$search}%")
+)
+              ->orWhereHas('detalles', fn($q) =>
+                  $q->where('Cantidad', 'LIKE', "%{$search}%")
+                    ->orWhere('PrecioUnitario', 'LIKE', "%{$search}%")
+                    ->orWhere('Subtotal', 'LIKE', "%{$search}%")
+              );
+    }
+
+    $facturas = $query->paginate(5);
+    return view('facturas.index', compact('facturas'));
+}
+
 
     public function create()
 {
@@ -128,4 +154,38 @@ class FacturaController extends Controller
 
         return redirect()->route('facturas.index')->with('success', 'Factura eliminada correctamente.');
     }
+
+
+public function exportarPDF(Request $request)
+{
+    $query = Factura::with(['cliente', 'empleado.persona', 'producto', 'detalles.producto']);
+
+    if ($request->filled('search')) {
+        $search = $request->search;
+
+        $query->where('Fecha', 'LIKE', "%{$search}%")
+              ->orWhere('Total', 'LIKE', "%{$search}%")
+              ->orWhereHas('cliente', fn($q) =>
+                  $q->where('NombreCliente', 'LIKE', "%{$search}%")
+              )
+              ->orWhereHas('empleado.persona', fn($q) =>
+                  $q->where('Nombre', 'LIKE', "%{$search}%")
+                    ->orWhere('Apellido', 'LIKE', "%{$search}%")
+              )
+              ->orWhereHas('detalles.producto', fn($q) =>
+    $q->where('NombreProducto', 'LIKE', "%{$search}%")
+)
+              ->orWhereHas('detalles', fn($q) =>
+                  $q->where('Cantidad', 'LIKE', "%{$search}%")
+                    ->orWhere('PrecioUnitario', 'LIKE', "%{$search}%")
+                    ->orWhere('Subtotal', 'LIKE', "%{$search}%")
+              );
+    }
+
+    $facturas = $query->get();
+
+    $pdf = Pdf::loadView('facturas.pdf', compact('facturas'))->setPaper('a4', 'landscape');
+    return $pdf->download('facturas.pdf');
+}
+
 }

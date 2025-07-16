@@ -24,8 +24,6 @@ class Pedido extends Model
     return $this->hasMany(PedidoDetalle::class, 'PedidoID', 'PedidoID');
 }
 
-
-
     public function cliente()
 {
     return $this->belongsTo(Cliente::class, 'ClienteID', 'ClienteID');
@@ -47,5 +45,7 @@ public function producto()
         'ProductoID'      // Local key en pedido_detalle
     );
 }
+
+
 
 }
