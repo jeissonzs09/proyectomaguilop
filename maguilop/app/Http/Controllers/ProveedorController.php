@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Proveedor;
 use App\Helpers\PermisosHelper;
+use App\Models\Persona;
+use App\Models\Empresa;
+
 
 class ProveedorController extends Controller
 {
@@ -24,7 +27,11 @@ class ProveedorController extends Controller
             abort(403);
         }
 
-        return view('proveedores.create');
+$personas = Persona::all();
+$empresas = Empresa::all();
+
+return view('proveedores.create', compact('personas', 'empresas'));
+
     }
 
     public function store(Request $request)
@@ -56,7 +63,11 @@ class ProveedorController extends Controller
         }
 
         $proveedor = Proveedor::findOrFail($id);
-        return view('proveedores.edit', compact('proveedor'));
+$personas = Persona::all();
+$empresas = Empresa::all();
+
+return view('proveedores.edit', compact('proveedor', 'personas', 'empresas'));
+
     }
 
     public function update(Request $request, $id)
@@ -83,13 +94,23 @@ class ProveedorController extends Controller
     }
 
     public function destroy($id)
-    {
-        if (!PermisosHelper::tienePermiso('Proveedores', 'eliminar')) {
-            abort(403);
-        }
-
-        Proveedor::findOrFail($id)->delete();
-
-        return redirect()->route('proveedores.index')->with('success', 'Proveedor eliminado correctamente.');
+{
+    if (!\App\Helpers\PermisosHelper::tienePermiso('Proveedores', 'eliminar')) {
+        abort(403);
     }
+
+    $proveedor = Proveedor::findOrFail($id);
+
+    // Validar si tiene compras vinculadas
+    if ($proveedor->compras()->exists()) {
+        return redirect()->route('proveedores.index')
+            ->with('error', 'No se puede eliminar el proveedor porque tiene compras asociadas.');
+    }
+
+    $proveedor->delete();
+
+    return redirect()->route('proveedores.index')
+        ->with('success', 'Proveedor eliminado correctamente.');
+}
+
 }

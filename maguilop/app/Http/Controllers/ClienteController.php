@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Cliente;
 use App\Helpers\PermisosHelper;
+use App\Models\Persona; 
 
 class ClienteController extends Controller
 {
@@ -14,8 +15,9 @@ class ClienteController extends Controller
             abort(403, 'No tienes permiso para ver esta sección.');
         }
 
-        $clientes = Cliente::all();
-        return view('clientes.index', compact('clientes'));
+        $clientes = Cliente::with('persona')->get();
+return view('clientes.index', compact('clientes'));
+
     }
 
     public function create()
@@ -24,7 +26,8 @@ class ClienteController extends Controller
             abort(403);
         }
 
-        return view('clientes.create');
+        $personas = Persona::all();
+        return view('clientes.create', compact('personas'));
     }
 
     public function store(Request $request)

@@ -9,17 +9,32 @@
         <form action="{{ route('reparaciones.store') }}" method="POST" class="space-y-5">
             @csrf
 
-            <div>
-                <label for="ClienteID" class="block font-semibold mb-1 text-gray-700">Cliente ID</label>
-                <input type="number" name="ClienteID" id="ClienteID" placeholder="Ej: 101"
-                       class="w-full border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring focus:ring-indigo-200 focus:outline-none" required>
-            </div>
+            {{-- Selector de Cliente --}}
+<div>
+    <label for="ClienteID" class="block font-semibold mb-1 text-gray-700">Cliente</label>
+    <select name="ClienteID" id="ClienteID"
+            class="w-full border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring focus:ring-indigo-200 focus:outline-none"
+            required>
+        <option value="">Selecciona un cliente</option>
+        @foreach ($clientes as $cliente)
+            <option value="{{ $cliente->ClienteID }}">{{ $cliente->NombreCliente }}</option>
+        @endforeach
+    </select>
+</div>
 
-            <div>
-                <label for="ProductoID" class="block font-semibold mb-1 text-gray-700">Producto ID</label>
-                <input type="number" name="ProductoID" id="ProductoID" placeholder="Ej: 2003"
-                       class="w-full border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring focus:ring-indigo-200 focus:outline-none" required>
-            </div>
+{{-- Selector de Producto --}}
+<div>
+    <label for="ProductoID" class="block font-semibold mb-1 text-gray-700">Producto</label>
+    <select name="ProductoID" id="ProductoID"
+            class="w-full border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring focus:ring-indigo-200 focus:outline-none"
+            required>
+        <option value="">Selecciona un producto</option>
+        @foreach ($productos as $producto)
+            <option value="{{ $producto->ProductoID }}">{{ $producto->NombreProducto }}</option>
+        @endforeach
+    </select>
+</div>
+
 
             <div>
                 <label for="FechaEntrada" class="block font-semibold mb-1 text-gray-700">Fecha de Entrada</label>

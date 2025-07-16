@@ -10,19 +10,38 @@
             @csrf
             @method('PUT')
 
-            <div>
-                <label for="ClienteID" class="block text-gray-700 font-semibold mb-2">Cliente ID</label>
-                <input type="number" name="ClienteID" id="ClienteID" value="{{ old('ClienteID', $reparacion->ClienteID) }}" required
-                       class="w-full rounded-md border-gray-300 shadow-sm px-4 py-2 focus:border-indigo-500 focus:ring focus:ring-indigo-200" />
-                @error('ClienteID') <p class="text-red-600 mt-1 text-sm">{{ $message }}</p> @enderror
-            </div>
+            {{-- Selector de Cliente --}}
+<div>
+    <label for="ClienteID" class="block font-semibold mb-1 text-gray-700">Cliente</label>
+    <select name="ClienteID" id="ClienteID"
+            class="w-full border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring focus:ring-indigo-200 focus:outline-none"
+            required>
+        <option value="">Selecciona un cliente</option>
+        @foreach ($clientes as $cliente)
+            <option value="{{ $cliente->ClienteID }}"
+                {{ $reparacion->ClienteID == $cliente->ClienteID ? 'selected' : '' }}>
+                {{ $cliente->NombreCliente }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
-            <div>
-                <label for="ProductoID" class="block text-gray-700 font-semibold mb-2">Producto ID</label>
-                <input type="number" name="ProductoID" id="ProductoID" value="{{ old('ProductoID', $reparacion->ProductoID) }}" required
-                       class="w-full rounded-md border-gray-300 shadow-sm px-4 py-2 focus:border-indigo-500 focus:ring focus:ring-indigo-200" />
-                @error('ProductoID') <p class="text-red-600 mt-1 text-sm">{{ $message }}</p> @enderror
-            </div>
+{{-- Selector de Producto --}}
+<div>
+    <label for="ProductoID" class="block font-semibold mb-1 text-gray-700">Producto</label>
+    <select name="ProductoID" id="ProductoID"
+            class="w-full border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring focus:ring-indigo-200 focus:outline-none"
+            required>
+        <option value="">Selecciona un producto</option>
+        @foreach ($productos as $producto)
+            <option value="{{ $producto->ProductoID }}"
+                {{ $reparacion->ProductoID == $producto->ProductoID ? 'selected' : '' }}>
+                {{ $producto->NombreProducto }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
 
             <div>
                 <label for="FechaEntrada" class="block text-gray-700 font-semibold mb-2">Fecha de Entrada</label>

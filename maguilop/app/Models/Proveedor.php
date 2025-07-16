@@ -26,5 +26,22 @@ class Proveedor extends Model
         'Estado',
         'Notas',
     ];
+
+    public function persona()
+{
+    return $this->belongsTo(Persona::class, 'PersonaID', 'PersonaID');
+}
+
+public function empresa()
+{
+    return $this->belongsTo(Empresa::class, 'EmpresaID', 'EmpresaID');
+}
+
+public function compras()
+{
+    return $this->hasMany(Compra::class, 'ProveedorID', 'ProveedorID');
+}
+
+
 }
 

@@ -22,11 +22,11 @@
                 <thead class="bg-orange-500 text-white text-sm uppercase">
                     <tr>
                         <th class="px-4 py-3 text-center">Factura ID</th>
-                        <th class="px-4 py-3 text-center">Cliente ID</th>
-                        <th class="px-4 py-3 text-center">Empleado ID</th>
+                        <th class="px-4 py-3 text-center">Cliente </th>
+                        <th class="px-4 py-3 text-center">Empleado </th>
                         <th class="px-4 py-3 text-center">Fecha</th>
                         <th class="px-4 py-3 text-center">Total</th>
-                        <th class="px-4 py-3 text-center">Producto ID</th>
+                        <th class="px-4 py-3 text-center">Producto </th>
                         <th class="px-4 py-3 text-center">Cantidad</th>
                         <th class="px-4 py-3 text-right">Precio Unitario</th>
                         <th class="px-4 py-3 text-right">Subtotal</th>

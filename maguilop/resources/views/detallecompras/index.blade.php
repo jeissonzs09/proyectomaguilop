@@ -21,9 +21,9 @@
             <table class="min-w-full text-sm text-gray-800">
                 <thead class="bg-orange-500 text-white text-sm uppercase">
                     <tr>
-                        <th class="px-4 py-3 text-center">Detalle Compra ID</th>
+                        {{-- <th class="px-4 py-3 text-center">Detalle Compra ID</th> --}}
                         <th class="px-4 py-3 text-center">Compra ID</th>
-                        <th class="px-4 py-3 text-center">Producto ID</th>
+                        <th class="px-4 py-3 text-center">Producto</th>
                         <th class="px-4 py-3 text-center">Cantidad</th>
                         <th class="px-4 py-3 text-center">Precio Unitario</th>
                         <th class="px-4 py-3 text-center">Subtotal</th>
@@ -33,9 +33,9 @@
                 <tbody class="divide-y divide-gray-200">
                     @foreach($detalleCompras as $detalle)
                         <tr class="hover:bg-gray-50 transition">
-                            <td class="px-4 py-2 text-center">{{ $detalle->DetalleCompraID }}</td>
+                            {{-- <td class="px-4 py-2 text-center">{{ $detalle->DetalleCompraID }}</td> --}}
                             <td class="px-4 py-2 text-center">{{ $detalle->CompraID }}</td>
-                            <td class="px-4 py-2 text-center">{{ $detalle->ProductoID }}</td>
+                            <td class="px-4 py-2 text-center">{{ $detalle->producto->NombreProducto ?? 'N/A' }}</td>
                             <td class="px-4 py-2 text-center">{{ $detalle->Cantidad }}</td>
                             <td class="px-4 py-2 text-center">L. {{ number_format($detalle->PrecioUnitario, 2) }}</td>
                             <td class="px-4 py-2 text-center">L. {{ number_format($detalle->Subtotal, 2) }}</td>

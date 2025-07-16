@@ -24,6 +24,8 @@ use App\Http\Controllers\BitacoraController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\ReportesController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EmpresaController;
+
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('usuarios', UsuarioController::class);
@@ -177,6 +179,9 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
 
     Route::resource('ventas', VentaController::class);
+
+    Route::resource('empresa', EmpresaController::class);
+
 
 
 

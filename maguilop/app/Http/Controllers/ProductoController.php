@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 use App\Helpers\PermisosHelper;
+use App\Models\Proveedor; // ✅ Correcto
 
 class ProductoController extends Controller
 {
@@ -15,31 +16,49 @@ class ProductoController extends Controller
     }
         $productos = Producto::paginate(10);
         return view('producto.index', compact('productos'));
+
+        $productos = Producto::with('proveedor')->get();
+        return view('productos.index', compact('productos'));
+
     }
 
     public function create()
     {
-        return view('producto.create');
+    $proveedores = Proveedor::all();
+    return view('producto.create', compact('proveedores'));
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'NombreProducto' => 'required|string|max:150',
-            'Descripcion' => 'nullable|string',
-            // Validar otros campos numéricos como precio, stock, IDs
-        ]);
+{
+    $request->validate([
+        'NombreProducto' => 'required|string|max:150',
+        'Descripcion' => 'nullable|string|max:500',
+        'PrecioCompra' => 'required|numeric|min:0',
+        'PrecioVenta' => 'required|numeric|min:0',
+        'Stock' => 'required|integer|min:0',
+        'ProveedorID' => 'required|integer|exists:proveedor,ProveedorID',
+    ]);
 
-        Producto::create($request->all());
+    Producto::create($request->only([
+        'NombreProducto',
+        'Descripcion',
+        'PrecioCompra',
+        'PrecioVenta',
+        'Stock',
+        'ProveedorID',
+    ]));
 
-        return redirect()->route('producto.index')->with('success', 'Producto creado correctamente.');
-    }
+    return redirect()->route('producto.index')->with('success', 'Producto creado correctamente.');
+}
+
 
     public function edit($id)
-    {
-        $producto = Producto::findOrFail($id);
-        return view('producto.edit', compact('producto'));
-    }
+{
+    $producto = Producto::findOrFail($id);
+    $proveedores = Proveedor::all();
+
+    return view('producto.edit', compact('producto', 'proveedores'));
+}
 
     public function update(Request $request, $id)
     {

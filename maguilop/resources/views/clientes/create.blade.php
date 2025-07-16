@@ -13,11 +13,22 @@
                     class="w-full border rounded px-3 py-2" required>
             </div>
 
-            <div class="mb-4">
-                <label for="PersonaID" class="block text-gray-700 font-bold mb-2">Persona ID</label>
-                <input type="number" name="PersonaID" id="PersonaID" placeholder="Ej: 201"
-                    class="w-full border rounded px-3 py-2" required>
-            </div>
+            {{-- Selector de persona --}}
+<div>
+    <label for="PersonaID" class="block text-sm font-medium text-gray-700 mb-1">Persona</label>
+    <select name="PersonaID" id="PersonaID"
+            class="w-full border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring focus:ring-indigo-200"
+            required>
+        <option value="">Seleccione una persona</option>
+        @foreach ($personas as $persona)
+            <option value="{{ $persona->PersonaID }}"
+                {{ old('PersonaID') == $persona->PersonaID ? 'selected' : '' }}>
+                {{ $persona->NombreCompleto }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
 
             <div class="mb-4">
                 <label for="Categoria" class="block text-gray-700 font-bold mb-2">Categoría</label>

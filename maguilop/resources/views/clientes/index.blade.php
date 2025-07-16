@@ -38,7 +38,7 @@
     <tr>
         <th class="px-4 py-3 text-center">Cliente ID</th>
         <th class="px-4 py-3 text-left">Nombre Cliente</th>
-        <th class="px-4 py-3 text-left">Persona ID</th>
+        <th class="px-4 py-3 text-left">Persona</th>
         <th class="px-4 py-3 text-left">Categoría</th>
         <th class="px-4 py-3 text-left">Fecha Registro</th>
         <th class="px-4 py-3 text-left">Estado</th>
@@ -51,7 +51,7 @@
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-4 py-2 text-center">{{ $cliente->ClienteID }}</td>
                             <td class="px-4 py-2">{{ $cliente->NombreCliente }}</td>
-                            <td class="px-4 py-2">{{ $cliente->PersonaID }}</td>
+                            <td class="px-4 py-2 text-center">{{ $cliente->persona->NombreCompleto ?? '—' }}</td>
                             <td class="px-4 py-2">{{ $cliente->Categoria }}</td>
                             <td class="px-4 py-2">{{ $cliente->FechaRegistro }}</td>
                             <td class="px-4 py-2">{{ $cliente->Estado }}</td>

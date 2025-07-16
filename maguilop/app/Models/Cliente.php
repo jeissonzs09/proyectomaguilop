@@ -25,4 +25,10 @@ public function reparaciones()
 {
     return $this->hasMany(Reparacion::class, 'ClienteID');
 }
+
+public function persona()
+{
+    return $this->belongsTo(Persona::class, 'PersonaID', 'PersonaID');
+}
+
 }

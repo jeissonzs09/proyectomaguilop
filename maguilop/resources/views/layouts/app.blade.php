@@ -174,6 +174,14 @@
     <span>Clientes</span>
 </a>
 
+@if(PermisosHelper::tienePermiso('Empresas', 'ver'))
+<a href="{{ route('empresa.index') }}" class="flex items-center space-x-2 px-6 py-2 hover:bg-orange-600 transition">
+    <i class="fas fa-building w-4 h-4"></i>
+    <span>Empresas</span>
+</a>
+@endif
+
+
                     @endif
                 </div>
             </div>

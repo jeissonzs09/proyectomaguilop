@@ -5,24 +5,57 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Reparacion;
 use App\Helpers\PermisosHelper;
+use App\Models\Cliente; // ✅ Correcto
+use App\Models\Producto;
+
 
 class ReparacionController extends Controller
 {
-    public function index()
-    {
-        if (!PermisosHelper::tienePermiso('Reparaciones', 'ver')) {
+
+public function index(Request $request)
+{
+    if (!PermisosHelper::tienePermiso('Reparaciones', 'ver')) {
         abort(403, 'No tienes permiso para ver esta sección.');
     }
-        $reparaciones = Reparacion::all();
-        return view('reparaciones.index', compact('reparaciones'));
+
+    // ⚠️ importante: el paginado se hace sobre el modelo Reparacion
+    $query = Reparacion::query()
+        ->join('cliente', 'reparacion.ClienteID', '=', 'cliente.ClienteID')
+        ->join('producto', 'reparacion.ProductoID', '=', 'producto.ProductoID')
+        ->select('reparacion.*'); // evita conflictos por columnas repetidas
+
+    if ($request->has('search')) {
+        $search = $request->search;
+
+        $query->whereRaw("
+    CONCAT_WS(' ',
+        ReparacionID,
+        cliente.NombreCliente,
+        producto.NombreProducto,
+        FechaEntrada,
+        FechaSalida,
+        reparacion.Estado,
+        DescripcionProblema,
+        Costo
+    ) LIKE ?", ["%{$search}%"]);
     }
+
+    $reparaciones = $query->with(['cliente', 'producto'])->paginate(5);
+
+    return view('reparaciones.index', compact('reparaciones'));
+}
+
+
 
     public function create()
     {
             if (!PermisosHelper::tienePermiso('Reparaciones', 'crear')) {
         abort(403);
     }
-        return view('reparaciones.create');
+    $clientes = Cliente::all();
+    $productos = Producto::all();
+
+    return view('reparaciones.create', compact('clientes', 'productos'));
     }
 
     public function store(Request $request)
@@ -47,8 +80,11 @@ class ReparacionController extends Controller
             if (!PermisosHelper::tienePermiso('Reparaciones', 'editar')) {
         abort(403);
     }
-        $reparacion = Reparacion::findOrFail($id);
-        return view('reparaciones.edit', compact('reparacion'));
+    $reparacion = Reparacion::findOrFail($id);
+    $clientes = Cliente::all();
+    $productos = Producto::all();
+
+    return view('reparaciones.edit', compact('reparacion', 'clientes', 'productos'));
     }
 
     public function update(Request $request, $id)

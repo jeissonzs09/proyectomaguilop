@@ -17,4 +17,10 @@ class DetalleCompra extends Model
         'PrecioUnitario',
         'Subtotal',
     ];
+
+    // Relación con Producto
+    public function producto()
+    {
+        return $this->belongsTo(Producto::class, 'ProductoID', 'ProductoID');
+    }
 }

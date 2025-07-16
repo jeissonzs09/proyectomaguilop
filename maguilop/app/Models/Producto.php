@@ -26,4 +26,10 @@ class Producto extends Model
         'AlmacenID',
         'EmbalajeID'
     ];
+
+    public function proveedor()
+{
+    return $this->belongsTo(Proveedor::class, 'ProveedorID', 'ProveedorID');
+}
+
 }

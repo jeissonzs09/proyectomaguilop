@@ -10,13 +10,37 @@
     @endphp
 
     <div class="p-4">
-        {{-- Botón de crear reparación --}}
-        @if($permisos::tienePermiso('Reparaciones', 'crear'))
-            <a href="{{ route('reparaciones.create') }}"
-               class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow">
-                <i class="fas fa-plus"></i> Nueva reparación
-            </a>
-        @endif
+
+<div class="flex items-center gap-3 mb-6 flex-wrap">
+    {{-- Botón a la izquierda --}}
+    @if($permisos::tienePermiso('Reparaciones', 'crear'))
+        <a href="{{ route('reparaciones.create') }}"
+           class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow whitespace-nowrap">
+            <i class="fas fa-plus"></i> Nueva reparación
+        </a>
+    @endif
+
+    {{-- Buscador con ícono de lupa integrado --}}
+    <div class="relative max-w-xs w-full">
+        <input
+            type="text"
+            x-data="{ search: '{{ request('search') }}' }"
+            x-model="search"
+            @input.debounce.500="window.location.href = '?search=' + encodeURIComponent(search)"
+            placeholder="Buscar reparación..."
+            class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200 focus:outline-none text-sm"
+        />
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M21 21l-4.35-4.35m1.44-5.4a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        </div>
+    </div>
+</div>
+
+
 
         <div class="overflow-x-auto bg-white rounded-lg shadow mt-4">
             <table class="min-w-full text-sm text-gray-800">
@@ -37,8 +61,8 @@
                     @foreach($reparaciones as $reparacion)
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-4 py-2">{{ $reparacion->ReparacionID }}</td>
-                            <td class="px-4 py-2">{{ $reparacion->ClienteID }}</td>
-                            <td class="px-4 py-2">{{ $reparacion->ProductoID }}</td>
+                            <td class="px-4 py-2">{{ $reparacion->cliente->NombreCliente }}</td>
+                            <td class="px-4 py-2">{{ $reparacion->producto->NombreProducto }}</td>
                             <td class="px-4 py-2">{{ $reparacion->FechaEntrada }}</td>
                             <td class="px-4 py-2">{{ $reparacion->FechaSalida }}</td>
                             <td class="px-4 py-2">{{ $reparacion->DescripcionProblema }}</td>

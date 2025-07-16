@@ -22,5 +22,17 @@ class Reparacion extends Model
         'Estado',
         'Costo',
     ];
+
+
+
+public function cliente() {
+    return $this->belongsTo(Cliente::class, 'ClienteID', 'ClienteID');
+}
+
+public function producto() {
+    return $this->belongsTo(Producto::class, 'ProductoID', 'ProductoID');
+}
+
+
 }
 

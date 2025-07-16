@@ -14,7 +14,7 @@ class DetalleCompraController extends Controller
             abort(403, 'No tienes permiso para ver esta sección.');
         }
 
-        $detalleCompras = DetalleCompra::all();
+        $detalleCompras = DetalleCompra::with('producto')->get();
         return view('detallecompras.index', compact('detalleCompras'));
     }
 

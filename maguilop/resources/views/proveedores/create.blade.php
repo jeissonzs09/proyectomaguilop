@@ -7,19 +7,37 @@
         <form action="{{ route('proveedores.store') }}" method="POST" class="space-y-6">
             @csrf
 
-            <div class="mb-4">
-                <label for="PersonaID" class="block text-gray-700 font-bold mb-2">Persona ID</label>
-                <input type="number" name="PersonaID" id="PersonaID" placeholder="Ej: 101"
-                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
-                @error('PersonaID') <p class="text-red-600 mt-1 text-sm">{{ $message }}</p> @enderror
-            </div>
+            {{-- Selector de Persona --}}
+<div>
+    <label for="PersonaID" class="block text-sm font-medium text-gray-700 mb-1">Persona</label>
+    <select name="PersonaID" id="PersonaID"
+            class="w-full border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring focus:ring-indigo-200"
+            required>
+        <option value="">Seleccione una persona</option>
+        @foreach ($personas as $persona)
+            <option value="{{ $persona->PersonaID }}"
+                {{ old('PersonaID') == $persona->PersonaID ? 'selected' : '' }}>
+                {{ $persona->NombreCompleto }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
-            <div class="mb-4">
-                <label for="EmpresaID" class="block text-gray-700 font-bold mb-2">Empresa ID</label>
-                <input type="number" name="EmpresaID" id="EmpresaID" placeholder="Ej: 55"
-                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                @error('EmpresaID') <p class="text-red-600 mt-1 text-sm">{{ $message }}</p> @enderror
-            </div>
+{{-- Selector de Empresa --}}
+<div class="mt-4">
+    <label for="EmpresaID" class="block text-sm font-medium text-gray-700 mb-1">Empresa</label>
+    <select name="EmpresaID" id="EmpresaID"
+            class="w-full border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring focus:ring-indigo-200">
+        <option value="">Seleccione una empresa</option>
+        @foreach ($empresas as $empresa)
+            <option value="{{ $empresa->EmpresaID }}"
+                {{ old('EmpresaID') == $empresa->EmpresaID ? 'selected' : '' }}>
+                {{ $empresa->NombreEmpresa }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
 
             <div class="mb-4">
                 <label for="RTN" class="block text-gray-700 font-bold mb-2">RTN</label>
