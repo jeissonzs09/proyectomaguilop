@@ -36,15 +36,16 @@
 
 
 <div class="flex flex-wrap justify-between items-center mb-6">
+    {{-- Botones a la izquierda --}}
     <div class="flex items-center gap-3">
-        @if($permisos::tienePermiso('Ventas', 'crear'))
-            <a href="{{ route('ventas.create') }}"
+        @if($permisos::tienePermiso('Reparaciones', 'crear'))
+            <a href="{{ route('reparaciones.create') }}"
                class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow whitespace-nowrap">
-                <i class="fas fa-plus"></i> Nueva venta
+                <i class="fas fa-plus"></i> Nueva reparación
             </a>
         @endif
 
-        <a href="{{ route('ventas.exportarPDF', ['search' => request('search')]) }}"
+        <a href="{{ route('reparaciones.exportarPDF', ['search' => request('search')]) }}"
            class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md shadow whitespace-nowrap">
             <i class="fas fa-file-pdf"></i> Exportar PDF
         </a>
@@ -57,7 +58,7 @@
             x-data="{ search: '{{ request('search') }}' }"
             x-model="search"
             @input.debounce.500="window.location.href = '?search=' + encodeURIComponent(search)"
-            placeholder="Buscar venta..."
+            placeholder="Buscar reparación..."
             class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200 focus:outline-none text-sm"
         />
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -69,6 +70,7 @@
         </div>
     </div>
 </div>
+
 
 
 
@@ -135,6 +137,3 @@
 </div>
     </div>
 </x-app-layout>
-
-
-
