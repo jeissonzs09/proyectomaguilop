@@ -98,16 +98,19 @@ public function exportarPDF(Request $request)
     $query = Producto::with('proveedor');
 
     if ($request->filled('search')) {
-        $search = $request->search;
-        $query->where('NombreProducto', 'LIKE', "%{$search}%")
-              ->orWhere('DescripcionProducto', 'LIKE', "%{$search}%")
-              ->orWhere('PrecioCompra', 'LIKE', "%{$search}%")
-              ->orWhere('PrecioVenta', 'LIKE', "%{$search}%")
-              ->orWhere('Stock', 'LIKE', "%{$search}%")
-              ->orWhereHas('proveedor', fn($q) => $q->where('NombreProveedor', 'LIKE', "%{$search}%"));
-    }
+    $search = $request->search;
+    
+    $query->where('NombreProducto', 'LIKE', "%{$search}%")
+          ->orWhere('Descripcion', 'LIKE', "%{$search}%")
+          ->orWhere('PrecioCompra', 'LIKE', "%{$search}%")
+          ->orWhere('PrecioVenta', 'LIKE', "%{$search}%")
+          ->orWhere('Stock', 'LIKE', "%{$search}%")
+          ->orWhereHas('proveedor', fn($q) => 
+              $q->where('Descripcion', 'LIKE', "%{$search}%") // Cambiado aquí
+          );
+}
 
-    $productos = $query->get();
+$productos = $query->get();
 
     $pdf = Pdf::loadView('producto.pdf', compact('productos'))
               ->setPaper('a4', 'landscape');

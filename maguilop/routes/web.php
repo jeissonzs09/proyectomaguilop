@@ -39,7 +39,6 @@ Route::middleware(['auth'])->group(function () {
      ->name('pedidos.exportarPDF');
      Route::get('/facturas/exportar-pdf', [FacturaController::class, 'exportarPDF'])
      ->name('facturas.exportarPDF');
-
 });
 
 Route::middleware(['auth'])->group(function () {

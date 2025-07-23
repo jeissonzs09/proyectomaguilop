@@ -25,26 +25,25 @@
         <i class="fas fa-file-pdf"></i> Exportar PDF
     </a>
 
-    {{-- Buscador con lupa --}}
-    <div class="relative max-w-xs w-full">
-        <input
-            type="text"
-            x-data="{ search: '{{ request('search') }}' }"
-            x-model="search"
-            @input.debounce.500="window.location.href = '?search=' + encodeURIComponent(search)"
-            placeholder="Buscar producto..."
-            class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200 focus:outline-none text-sm"
-        />
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
-                 viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M21 21l-4.35-4.35m1.44-5.4a7 7 0 11-14 0 7 7 0 0114 0z" />
+{{-- Buscador con lupa --}}
+
+       
+         <div class="relative max-w-xs w-full ml-auto"> <!-- Alinea el buscador a la derecha -->
+            <input
+                type="text"
+                x-data="{ search: '{{ request('search') }}' }"
+                x-model="search"
+                @input.debounce.500="window.location.href = '?search=' + encodeURIComponent(search)"
+                placeholder="Buscar producto..."
+                class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200 focus:outline-none text-sm"
+            />
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m1.44-5.4a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
+            </div>
         </div>
     </div>
-
-</div>
 
 
         <div class="overflow-x-auto bg-white rounded-lg shadow mt-4">
@@ -107,9 +106,3 @@
 
     </div>
 </x-app-layout>
-
-
-
-
-
-

@@ -9,25 +9,33 @@
             {{-- Tarjetas de resumen --}}
 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
     {{-- Clientes --}}
-    <div class="bg-white p-4 rounded shadow text-center">
+<a href="{{ route('clientes.index') }}" class="block">
+    <div class="bg-white p-4 rounded shadow text-center hover:bg-blue-50 transition">
         <i class="bi bi-people-fill text-3xl text-blue-600"></i>
         <strong class="block mt-1">Clientes</strong>
         <div class="text-xl font-bold text-blue-600">{{ $totalClientes }}</div>
     </div>
+</a>
 
     {{-- Empleados --}}
-<div class="bg-white p-4 rounded shadow text-center">
-    <i class="bi bi-person-badge text-3xl text-green-600"></i>
-    <strong class="block mt-1">Empleados</strong>
-    <div class="text-xl font-bold text-green-600">{{ $totalEmpleados }}</div>
-</div>
+<a href="{{ route('empleados.index') }}" class="block">
+    <div class="bg-white p-4 rounded shadow text-center hover:bg-green-50 transition">
+        <i class="bi bi-person-badge text-3xl text-green-600"></i>
+        <strong class="block mt-1">Empleados</strong>
+        <div class="text-xl font-bold text-green-600">{{ $totalEmpleados }}</div>
+    </div>
+</a>
+
 
     {{-- Pedidos --}}
-    <div class="bg-white p-4 rounded shadow text-center">
+ <a href="{{ route('pedidos.index') }}" class="block">
+    <div class="bg-white p-4 rounded shadow text-center hover:bg-yellow-50 transition">
         <i class="bi bi-box-seam text-3xl text-yellow-600"></i>
         <strong class="block mt-1">Pedidos</strong>
         <div class="text-xl font-bold text-yellow-600">{{ $totalPedidos }}</div>
     </div>
+</a>
+
 
     {{-- Total Ventas --}}
     <div class="bg-white p-4 rounded shadow text-center">

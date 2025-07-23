@@ -107,28 +107,30 @@ $request->validate([
 
 public function exportarPDF(Request $request)
 {
-    $query = Venta::with(['cliente', 'empleado.persona', 'producto'])->get();
+    $query = Venta::with(['cliente', 'empleado.persona', 'producto']);
 
     if ($request->filled('search')) {
         $search = $request->search;
 
         $query->where('FechaVenta', 'LIKE', "%{$search}%")
               ->orWhere('TotalVenta', 'LIKE', "%{$search}%")
-              ->orWhereHas('cliente', fn($q) => $q->where('NombreCliente', 'LIKE', "%{$search}%"))
-              ->orWhereHas('empleado.persona', fn($q) =>
+              ->orWhereHas('cliente', function($q) use ($search) {
+                  $q->where('NombreCliente', 'LIKE', "%{$search}%");
+              })
+              ->orWhereHas('empleado.persona', function($q) use ($search) {
                   $q->where('Nombre', 'LIKE', "%{$search}%")
-                    ->orWhere('Apellido', 'LIKE', "%{$search}%")
-              )
-              ->orWhereHas('producto', fn($q) => $q->where('NombreProducto', 'LIKE', "%{$search}%"));
+                    ->orWhere('Apellido', 'LIKE', "%{$search}%");
+              })
+              ->orWhereHas('producto', function($q) use ($search) {
+                  $q->where('NombreProducto', 'LIKE', "%{$search}%");
+              });
     }
 
-    $ventas = $query->get();
+    $ventas = $query->get(); // ✅ Aquí se ejecuta después de aplicar todos los filtros
 
     $pdf = Pdf::loadView('ventas.pdf', compact('ventas'))->setPaper('a4', 'landscape');
     return $pdf->download('ventas.pdf');
 }
-
-
 
 
 }
