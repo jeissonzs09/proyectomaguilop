@@ -142,16 +142,14 @@ Route::resource('detalle_pedidos', DetallePedidoController::class);
 
 Route::put('pedido/{pedido}', [PedidoController::class, 'update'])->name('pedido.update');
 
-
-
+// Rutas simples y funcionales para backups
 Route::middleware(['auth'])->group(function () {
     Route::get('/backups', [BackupController::class, 'index'])->name('backups.index');
-    Route::get('/backups/create', [BackupController::class, 'create'])->name('backups.create');
     Route::post('/backups', [BackupController::class, 'store'])->name('backups.store');
-    Route::get('/backups/{id}/edit', [BackupController::class, 'edit'])->name('backups.edit');
-    Route::put('/backups/{id}', [BackupController::class, 'update'])->name('backups.update');
-    Route::delete('/backups/{id}', [BackupController::class, 'destroy'])->name('backups.destroy');
+    Route::post('/backups/{id}/restore', [BackupController::class, 'restore'])->name('backups.restore');
 });
+
+
 
 
 Route::middleware(['auth'])->group(function () {

@@ -5,85 +5,91 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
-use Carbon\Carbon;
-use App\Models\Backup;
 
 class BackupController extends Controller
 {
-public function index()
-{
-    $backups = Backup::with('usuario')->orderByDesc('FechaBackup')->get();
-    return view('backups.index', compact('backups'));
-}
-
-    public function generar(Request $request)
+    public function index()
     {
-        $request->validate([
-            'descripcion' => 'required|string|max:1000'
-        ]);
+        $backups = DB::table('backup')
+            ->join('usuario', 'usuario.UsuarioID', '=', 'backup.UsuarioID')
+            ->select('backup.*', 'usuario.NombreUsuario as usuario')
+            ->orderByDesc('BackupID')
+            ->get();
 
-        $user = Auth::user(); // el usuario autenticado
-        $db     = config('database.connections.mysql.database');
-        $userDB = config('database.connections.mysql.username');
-        $passDB = config('database.connections.mysql.password');
-        $host   = config('database.connections.mysql.host');
-
-        $fecha = Carbon::now()->format('Y-m-d_H-i-s');
-        $archivo = "backup_{$fecha}.sql";
-        $carpeta = storage_path("app/backups");
-
-        // Asegurar que la carpeta exista
-        if (!File::exists($carpeta)) {
-            File::makeDirectory($carpeta, 0755, true);
-        }
-
-        $rutaCompleta = "{$carpeta}/{$archivo}";
-
-        // Generar backup con mysqldump
-        $comando = "\"C:\\xampp\\mysql\\bin\\mysqldump.exe\" --user={$userDB} --password={$passDB} --host={$host} {$db} > \"{$rutaCompleta}\"";
-        $resultado = null;
-        $estado = null;
-        exec($comando, $resultado, $estado);
-
-        if ($estado !== 0) {
-            return back()->with('error', 'No se pudo generar el backup. Verifica tus credenciales y configuración.');
-        }
-
-        // Obtener tamaño del archivo
-        $tamanoBytes = File::size($rutaCompleta);
-        $tamanoMB = number_format($tamanoBytes / 1048576, 2); // Convertir a MB
-
-        // Ruta relativa
-        $rutaRelativa = "backups/{$archivo}";
-
-        // Insertar en la base de datos
-        DB::table('backup')->insert([
-            'UsuarioID' => $user->id,
-            'FechaBackup' => Carbon::now(),
-            'NombreArchivo' => $archivo,
-            'RutaArchivo' => $rutaRelativa,
-            'TamanoMB' => $tamanoMB,
-            'Descripcion' => $request->descripcion
-        ]);
-
-        return redirect()->route('backup.index')->with('success', 'Backup generado exitosamente.');
+        return view('backups.index', compact('backups'));
     }
 
-    public function eliminar($id)
+    public function store(Request $request)
 {
-    $backup = \App\Models\Backup::findOrFail($id);
+    $descripcion = $request->input('descripcion');
+    $fecha = now();
+    $usuarioID = Auth::user()->UsuarioID;
 
-    // Eliminar el archivo físico
-    $ruta = storage_path('app/' . $backup->RutaArchivo);
-    if (File::exists($ruta)) {
-        File::delete($ruta);
+    // Nombre y ruta del archivo
+    $nombreArchivo = "backup_" . $fecha->format('Ymd_His') . ".sql";
+    $ruta = storage_path("app/public/backups/$nombreArchivo"); // 🟢 Definida antes de usar
+
+    // Crea la carpeta si no existe
+    if (!file_exists(dirname($ruta))) {
+        mkdir(dirname($ruta), 0755, true);
     }
 
-    // Eliminar de la base de datos
-    $backup->delete();
+    // Ejecutar mysqldump con ruta absoluta (Windows)
+    $mysqldumpPath = 'C:\\xampp\\mysql\\bin\\mysqldump.exe'; // Cambia si tu path es distinto
+    $comando = sprintf(
+        '"%s" -u%s -p"%s" %s > "%s"',
+        $mysqldumpPath,
+        env('DB_USERNAME'),
+        env('DB_PASSWORD'),
+        env('DB_DATABASE'),
+        $ruta
+    );
 
-    return redirect()->route('backup.index')->with('success', 'Backup eliminado correctamente.');
+    exec($comando . ' 2>&1', $output, $returnCode);
+
+    if ($returnCode !== 0) {
+        dd("Error al ejecutar mysqldump:", $output);
+    }
+
+    // Guardar en la base de datos
+    DB::table('backup')->insert([
+        'UsuarioID'     => $usuarioID,
+        'FechaBackup'   => $fecha,
+        'Descripcion'   => $descripcion,
+        'NombreArchivo' => $nombreArchivo,
+        'RutaArchivo'   => "storage/backups/$nombreArchivo", // ✅ visible por el navegador
+        'TamanoMB'      => round(filesize($ruta) / 1048576, 2),
+    ]);
+
+    return redirect()->back()->with('success', 'Backup creado correctamente.');
 }
+
+
+    public function restore($id)
+    {
+        $backup = DB::table('backup')->where('BackupID', $id)->first();
+
+        if (!$backup) {
+            return back()->with('error', 'Backup no encontrado.');
+        }
+
+        $ruta = storage_path("app/public/backups/" . $backup->NombreArchivo);
+
+        if (!file_exists($ruta)) {
+            return back()->with('error', 'Archivo de respaldo no encontrado.');
+        }
+
+        $comando = sprintf(
+            'mysql -u%s -p"%s" %s < "%s"',
+            env('DB_USERNAME'),
+            env('DB_PASSWORD'),
+            env('DB_DATABASE'),
+            $ruta
+        );
+
+        exec($comando);
+
+        return back()->with('success', 'Base de datos restaurada con éxito.');
+    }
 }
+
