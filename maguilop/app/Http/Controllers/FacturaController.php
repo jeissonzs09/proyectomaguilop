@@ -11,6 +11,7 @@ use App\Models\Empleado;
 use App\Models\Producto;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class FacturaController extends Controller
 {
@@ -105,6 +106,7 @@ public function store(Request $request)
         'EmpleadoID' => $empleadoID,
         'Fecha' => now(),
         'Total' => $total,
+        'Estado' => 'Activa',
     ]);
 
     // Crear detalles y descontar stock
@@ -247,6 +249,52 @@ public function generarFacturaPDF($id)
     $pdf = PDF::loadView('facturas.pdf', compact('factura', 'logoSrc'))->setPaper('letter', 'portrait');
     return $pdf->download('factura_' . $factura->FacturaID . '.pdf');
 }
+
+public function cancelar($id)
+{
+    $factura = Factura::with('detalles')->findOrFail($id);
+
+    if ($factura->Estado === 'Cancelada') {
+        return redirect()->back()->with('error', 'La factura ya está cancelada.');
+    }
+
+    DB::beginTransaction();
+
+    try {
+        // Revertir el stock de cada producto de la factura
+        foreach ($factura->detalles as $detalle) {
+            $producto = Producto::find($detalle->ProductoID);
+            if ($producto) {
+                $producto->Stock += $detalle->Cantidad;
+                $producto->save();
+            }
+        }
+
+        // Cambiar el estado de la factura a "Cancelada"
+        $factura->Estado = 'Cancelada';
+        $factura->save();
+
+        // (Opcional) Registrar en bitácora
+        /*
+        Bitacora::create([
+            'UsuarioID' => auth()->user()->UsuarioID,
+            'Accion' => 'Cancelar Factura',
+            'Tabla' => 'Factura',
+            'Fecha' => now(),
+            'Descripcion' => 'Se canceló la factura ID ' . $factura->FacturaID . ' y se restauró el stock.',
+        ]);
+        */
+
+        DB::commit();
+        return redirect()->route('facturas.index')->with('success', 'Factura cancelada y stock actualizado correctamente.');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->back()->with('error', 'Error al cancelar la factura: ' . $e->getMessage());
+    }
+}
+
+
 
 
 

@@ -16,6 +16,7 @@ class Factura extends Model
         'EmpleadoID',
         'Fecha',
         'Total',
+        'Estado',
     ];
 
     // Relación uno a muchos con detalle_factura

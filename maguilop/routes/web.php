@@ -173,6 +173,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/facturas/{id}/edit', [FacturaController::class, 'edit'])->name('facturas.edit');
     Route::put('/facturas/{id}', [FacturaController::class, 'update'])->name('facturas.update');
     Route::delete('/facturas/{id}', [FacturaController::class, 'destroy'])->name('facturas.destroy');
+    Route::put('/facturas/{id}/cancelar', [App\Http\Controllers\FacturaController::class, 'cancelar'])->name('facturas.cancelar');
+
 });
 
 
