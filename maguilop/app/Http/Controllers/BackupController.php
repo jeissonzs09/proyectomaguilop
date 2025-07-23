@@ -3,81 +3,87 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 use App\Models\Backup;
-use App\Helpers\PermisosHelper;
 
 class BackupController extends Controller
 {
-    public function index()
-    {
-        if (!PermisosHelper::tienePermiso('Backups', 'ver')) {
-            abort(403, 'No tienes permiso para ver esta sección.');
-        }
+public function index()
+{
+    $backups = Backup::with('usuario')->orderByDesc('FechaBackup')->get();
+    return view('backups.index', compact('backups'));
+}
 
-        $backups = Backup::all();
-        return view('backups.index', compact('backups'));
-    }
-
-    public function create()
-    {
-        if (!PermisosHelper::tienePermiso('Backups', 'crear')) {
-            abort(403);
-        }
-
-        return view('backups.create');
-    }
-
-    public function store(Request $request)
+    public function generar(Request $request)
     {
         $request->validate([
-            'UsuarioID' => 'required|integer',
-            'FechaBackup' => 'nullable|date',
-            'NombreArchivo' => 'required|string|max:255',
-            'RutaArchivo' => 'required|string',
-            'TamanoMB' => 'nullable|numeric',
-            'Descripcion' => 'nullable|string',
+            'descripcion' => 'required|string|max:1000'
         ]);
 
-        Backup::create($request->all());
+        $user = Auth::user(); // el usuario autenticado
+        $db     = config('database.connections.mysql.database');
+        $userDB = config('database.connections.mysql.username');
+        $passDB = config('database.connections.mysql.password');
+        $host   = config('database.connections.mysql.host');
 
-        return redirect()->route('backups.index')->with('success', 'Backup registrado correctamente.');
-    }
+        $fecha = Carbon::now()->format('Y-m-d_H-i-s');
+        $archivo = "backup_{$fecha}.sql";
+        $carpeta = storage_path("app/backups");
 
-    public function edit($id)
-    {
-        if (!PermisosHelper::tienePermiso('Backups', 'editar')) {
-            abort(403);
+        // Asegurar que la carpeta exista
+        if (!File::exists($carpeta)) {
+            File::makeDirectory($carpeta, 0755, true);
         }
 
-        $backup = Backup::findOrFail($id);
-        return view('backups.edit', compact('backup'));
-    }
+        $rutaCompleta = "{$carpeta}/{$archivo}";
 
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'UsuarioID' => 'required|integer',
-            'FechaBackup' => 'nullable|date',
-            'NombreArchivo' => 'required|string|max:255',
-            'RutaArchivo' => 'required|string',
-            'TamanoMB' => 'nullable|numeric',
-            'Descripcion' => 'nullable|string',
+        // Generar backup con mysqldump
+        $comando = "\"C:\\xampp\\mysql\\bin\\mysqldump.exe\" --user={$userDB} --password={$passDB} --host={$host} {$db} > \"{$rutaCompleta}\"";
+        $resultado = null;
+        $estado = null;
+        exec($comando, $resultado, $estado);
+
+        if ($estado !== 0) {
+            return back()->with('error', 'No se pudo generar el backup. Verifica tus credenciales y configuración.');
+        }
+
+        // Obtener tamaño del archivo
+        $tamanoBytes = File::size($rutaCompleta);
+        $tamanoMB = number_format($tamanoBytes / 1048576, 2); // Convertir a MB
+
+        // Ruta relativa
+        $rutaRelativa = "backups/{$archivo}";
+
+        // Insertar en la base de datos
+        DB::table('backup')->insert([
+            'UsuarioID' => $user->id,
+            'FechaBackup' => Carbon::now(),
+            'NombreArchivo' => $archivo,
+            'RutaArchivo' => $rutaRelativa,
+            'TamanoMB' => $tamanoMB,
+            'Descripcion' => $request->descripcion
         ]);
 
-        $backup = Backup::findOrFail($id);
-        $backup->update($request->all());
-
-        return redirect()->route('backups.index')->with('success', 'Backup actualizado correctamente.');
+        return redirect()->route('backup.index')->with('success', 'Backup generado exitosamente.');
     }
 
-    public function destroy($id)
-    {
-        if (!PermisosHelper::tienePermiso('Backups', 'eliminar')) {
-            abort(403);
-        }
+    public function eliminar($id)
+{
+    $backup = \App\Models\Backup::findOrFail($id);
 
-        Backup::findOrFail($id)->delete();
-
-        return redirect()->route('backups.index')->with('success', 'Backup eliminado correctamente.');
+    // Eliminar el archivo físico
+    $ruta = storage_path('app/' . $backup->RutaArchivo);
+    if (File::exists($ruta)) {
+        File::delete($ruta);
     }
+
+    // Eliminar de la base de datos
+    $backup->delete();
+
+    return redirect()->route('backup.index')->with('success', 'Backup eliminado correctamente.');
+}
 }

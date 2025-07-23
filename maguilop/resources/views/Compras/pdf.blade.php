@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <title>Listado de Ventas | MAGUILOP</title>
+    <title>Listado de Compras | MAGUILOP</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -23,7 +23,7 @@
             margin-bottom: 25px;
         }
         .logo {
-            width: 160px; /* Tamaño del logo */
+            width: 160px;
             margin-bottom: 10px;
         }
         .company-title {
@@ -32,47 +32,37 @@
             font-weight: bold;
             margin-bottom: 10px;
         }
+        .company-info {
+            text-align: center;
+            margin-bottom: 15px;
+        }
         .company-info p {
             font-size: 15px;
             margin: 3px 0;
             color: #333;
         }
-        .divider {
-            border-top: 3px solid #f97316;
-            margin: 25px 0;
-        }
-        .final-title {
+        .metadata {
             text-align: center;
-            font-size: 24px;
-            color: #f97316;
-            font-weight: bold;
-            margin-bottom: 20px;
-            text-transform: uppercase;
+            font-size: 14px;
+            margin-bottom: 15px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
+            font-size: 14px;
         }
         th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            font-size: 14px;
-            text-align: center;
+            border: 1px solid #444;
+            padding: 8px;
+            text-align: left;
         }
         th {
             background-color: #f97316;
-            color: #fff;
-            font-size: 15px;
+            color: white;
         }
         tr:nth-child(even) {
             background-color: #fdf1e8;
-        }
-        .metadata {
-            text-align: center;
-            margin-bottom: 15px;
-            font-size: 14px;
-            color: #333;
         }
         .footer {
             margin-top: 25px;
@@ -80,17 +70,20 @@
             text-align: center;
             color: #888;
         }
+        thead {
+            display: table-row-group;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <img src="{{ public_path('images/logo-maguilop.png') }}" class="logo">
+        <img src="{{ public_path('images/logo-maguilop.png') }}" class="logo" alt="Logo MAGUILOP">
         <h1 class="company-title">MAGUILOP</h1>
     </div>
 
-    <div class="company-info" style="text-align: center;">
+    <div class="company-info">
         <p><strong>Dirección:</strong> Ave. República de Chile, Col. Concepción</p>
         <p><strong>Teléfono:</strong> (504) 2233-7722, 2272-5665</p>
         <p><strong>Correo:</strong> maguilop2912792@yahoo.com</p>
@@ -100,46 +93,32 @@
     </div>
 
     <div class="metadata">
-        <p><strong>Fecha de Generación:</strong> {{ date('d/m/Y H:i') }}</p>
-        <p><strong>Total de Registros:</strong> {{ count($ventas) }} registros</p>
+        <p><strong>Generado:</strong> {{ date('d/m/Y H:i') }}</p>
+        <p><strong>Total:</strong> {{ count($compras) }} registros</p>
     </div>
 
-    <div class="divider"></div>
-
-    <h2 class="final-title">Listado de Ventas</h2>
+    <h2 style="text-align: center; margin-top: 10px;">Listado de Compras</h2>
 
     <table>
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Cliente</th>
+                <th>Proveedor</th>
                 <th>Empleado</th>
-                <th>Producto</th>
-                <th>Fecha Venta</th>
+                <th>Fecha</th>
                 <th>Total</th>
+                <th>Estado</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($ventas as $v)
+            @foreach($compras as $c)
                 <tr>
-                    <td>{{ $v->VentaID }}</td>
-                    <td>{{ $v->cliente->NombreCliente ?? '—' }}</td>
-                    <td>
-                        @if($v->empleado && $v->empleado->persona)
-                            {{ $v->empleado->persona->Nombre }} {{ $v->empleado->persona->Apellido }}
-                        @else
-                            —
-                        @endif
-                    </td>
-                    <td>{{ $v->producto->NombreProducto ?? '—' }}</td>
-                    <td>{{ $v->FechaVenta }}</td>
-                    <td>
-                        @if(is_numeric($v->TotalVenta))
-                            L {{ number_format($v->TotalVenta, 2) }}
-                        @else
-                            —
-                        @endif
-                    </td>
+                    <td>{{ $c->CompraID }}</td>
+                    <td>{{ optional($c->proveedor)->Descripcion ?? '—' }}</td>
+                    <td>{{ optional(optional($c->empleado)->persona)->NombreCompleto ?? '—' }}</td>
+                    <td>{{ \Carbon\Carbon::parse($c->FechaCompra)->format('d/m/Y') }}</td>
+                    <td>L. {{ number_format($c->TotalCompra, 2) }}</td>
+                    <td>{{ $c->Estado }}</td>
                 </tr>
             @endforeach
         </tbody>

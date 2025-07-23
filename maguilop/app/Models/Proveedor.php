@@ -27,13 +27,11 @@ class Proveedor extends Model
         'Notas',
     ];
 
-    public function persona()
-{
+public function persona() {
     return $this->belongsTo(Persona::class, 'PersonaID', 'PersonaID');
 }
 
-public function empresa()
-{
+public function empresa() {
     return $this->belongsTo(Empresa::class, 'EmpresaID', 'EmpresaID');
 }
 
@@ -44,4 +42,3 @@ public function compras()
 
 
 }
-

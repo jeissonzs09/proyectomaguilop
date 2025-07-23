@@ -23,17 +23,44 @@
             </div>
         @endif
 
-        {{-- Botón de crear proveedor --}}
-        @if($permisos::tienePermiso('Proveedores', 'crear'))
-            <a href="{{ route('proveedores.create') }}"
-               class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow font-semibold">
-                <i class="fas fa-plus"></i> Nuevo proveedor
-            </a>
-        @endif
+        {{-- Botones --}}
+        <div class="flex justify-between items-center mb-4 mt-4">
+            @if($permisos::tienePermiso('Proveedores', 'crear'))
+                <a href="{{ route('proveedores.create') }}"
+                   class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow font-semibold mr-2">
+                    <i class="fas fa-plus"></i> Nuevo Proveedor
+                </a>
+            @endif
+
+   <a href="{{ route('proveedores.exportarPDF', ['search' => request('search')]) }}"
+   class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md shadow whitespace-nowrap">
+    <i class="fas fa-file-pdf"></i> Exportar PDF
+</a>
+
+
+            {{-- Buscador --}}
+            <div class="relative max-w-xs w-full ml-auto">
+                <input
+                    type="text"
+                    x-data="{ search: '{{ request('search') }}' }"
+                    x-model="search"
+                    @input.debounce.500="window.location.href = '?search=' + encodeURIComponent(search)"
+                    placeholder="Buscar proveedores..."
+                    class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200 focus:outline-none text-sm"
+                />
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
+                         viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M21 21l-4.35-4.35m1.44-5.4a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
 
         {{-- Tabla de proveedores --}}
         <div class="overflow-x-auto bg-white rounded-lg shadow mt-4">
-            <table class="min-w-full text-sm text-gray-800">
+            <table id="empresa-table" class="min-w-full text-sm text-gray-800">
                 <thead class="bg-orange-500 text-white uppercase text-sm">
                     <tr>
                         <th class="px-4 py-3 text-center">ID</th>
@@ -68,7 +95,6 @@
                             <td class="px-4 py-2 text-center">{{ $proveedor->Estado }}</td>
                             <td class="px-4 py-2 text-center">
                                 <div class="flex items-center justify-center gap-2">
-                                    {{-- Editar --}}
                                     @if($permisos::tienePermiso('Proveedores', 'editar'))
                                         <a href="{{ route('proveedores.edit', $proveedor->ProveedorID) }}"
                                            class="bg-yellow-400 hover:bg-yellow-500 text-white p-2 rounded-full"
@@ -77,7 +103,6 @@
                                         </a>
                                     @endif
 
-                                    {{-- Eliminar --}}
                                     @if($permisos::tienePermiso('Proveedores', 'eliminar'))
                                         <form action="{{ route('proveedores.destroy', $proveedor->ProveedorID) }}" method="POST"
                                               onsubmit="return confirm('¿Estás seguro de eliminar este proveedor?')">
@@ -97,7 +122,10 @@
                 </tbody>
             </table>
         </div>
+
+        {{-- Paginación --}}
+        <div class="mt-4">
+    {{ $proveedores->appends(['search' => request('search')])->links() }}
+</div>
     </div>
 </x-app-layout>
-
-

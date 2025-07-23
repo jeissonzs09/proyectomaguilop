@@ -3,52 +3,39 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\DetalleCompra;
 
 class Compra extends Model
 {
-    protected $table = 'compra'; // Nombre de la tabla
-    protected $primaryKey = 'CompraID';
-    public $timestamps = false;
+    protected $table = 'compra'; // ✅ Nombre de la tabla
+    protected $primaryKey = 'CompraID'; // ✅ Clave primaria personalizada
+    public $timestamps = false; // ✅ Sin created_at / updated_at
 
     protected $fillable = [
         'ProveedorID',
         'EmpleadoID',
-        'FechaCompra',
-        'TotalCompra',
-        'Estado',
+        'Fecha',
+        'Total',
     ];
 
-    // Relación con DetalleCompra
+    // Relación uno a muchos con detalle_compra
     public function detalles()
     {
-        return $this->hasMany(DetalleCompra::class, 'CompraID');
+        return $this->hasMany(DetalleCompra::class, 'CompraID', 'CompraID');
     }
 
-    // Método para calcular el total de los detalles
-    public function calcularTotal()
+    public function proveedor()
     {
-        return $this->detalles()->sum('Subtotal');
+        return $this->belongsTo(Proveedor::class, 'ProveedorID');
     }
-}
 
-// Modelo DetalleCompra definido dentro del mismo archivo
-class DetalleCompra extends Model
-{
-    protected $table = 'detalle_compra'; // Nombre de la tabla
-    protected $primaryKey = 'DetalleCompraID';
-    public $timestamps = false;
-
-    protected $fillable = [
-        'CompraID',
-        'ProductoID',
-        'Cantidad',
-        'PrecioUnitario',
-        'Subtotal',
-    ];
-
-    // Relación con Compra
-    public function compra()
+    public function empleado()
     {
-        return $this->belongsTo(Compra::class, 'CompraID');
+        return $this->belongsTo(Empleado::class, 'EmpleadoID');
+    }
+
+    public function producto()
+    {
+        return $this->belongsTo(Producto::class, 'ProductoID');
     }
 }

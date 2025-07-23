@@ -27,6 +27,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmpresaController;
 
 
+
 Route::middleware(['auth'])->group(function () {
     Route::resource('usuarios', UsuarioController::class);
     Route::get('/reparaciones/exportar-pdf', [ReparacionController::class, 'exportarPDF'])
@@ -39,7 +40,11 @@ Route::middleware(['auth'])->group(function () {
      ->name('pedidos.exportarPDF');
      Route::get('/facturas/exportar-pdf', [FacturaController::class, 'exportarPDF'])
      ->name('facturas.exportarPDF');
+     Route::get('/compras/exportar-pdf', [CompraController::class, 'exportarPDF'])
+     ->name('compras.exportarPDF');
+     Route::get('proveedores/exportar-pdf', [ProveedorController::class, 'exportarPDF'])->name('proveedores.exportarPDF');
 });
+
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');

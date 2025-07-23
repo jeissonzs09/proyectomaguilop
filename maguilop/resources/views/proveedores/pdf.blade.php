@@ -2,28 +2,23 @@
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <title>Listado de Pedidos | MAGUILOP</title>
+    <title>Listado de Proveedores | MAGUILOP</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f9f9f9;
             margin: 0;
-            padding: 30px;
+            padding: 10px;
         }
         .container {
-            max-width: 900px;
-            background: #ffffff;
+            max-width: 100%;
             margin: auto;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            padding: 30px;
         }
         .header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         .logo {
-            width: 160px; /* Tamaño del logo */
+            width: 160px;
             margin-bottom: 10px;
         }
         .company-title {
@@ -33,59 +28,64 @@
             margin-bottom: 10px;
         }
         .company-info {
-            text-align: center; /* Centrar la información de la empresa */
-        }
-        .company-info p {
-            font-size: 15px;
-            margin: 3px 0;
+            text-align: center;
+            font-size: 14px;
             color: #333;
+            margin-bottom: 15px;
+        }
+        .metadata {
+            text-align: center;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 15px;
         }
         .divider {
             border-top: 3px solid #f97316;
-            margin: 25px 0;
+            margin: 20px 0;
+        }
+        .page-break {
+            page-break-before: always;
         }
         .final-title {
             text-align: center;
             font-size: 24px;
             color: #f97316;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-transform: uppercase;
         }
         table {
-            width: 100%;
+            width: 100% !important;
             border-collapse: collapse;
-            margin-top: 10px;
+            table-layout: fixed !important;
+            page-break-inside: auto;
         }
         th, td {
             border: 1px solid #ddd;
-            padding: 12px;
-            font-size: 14px;
+            padding: 4px !important;
+            font-size: 9px !important;
             text-align: center;
+            white-space: normal !important;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         th {
             background-color: #f97316;
             color: #fff;
-            font-size: 15px;
+            font-size: 10px !important;
         }
         tr:nth-child(even) {
             background-color: #fdf1e8;
         }
-        .metadata {
-            text-align: center;
-            margin-bottom: 15px;
-            font-size: 14px;
-            color: #333;
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
         }
         .footer {
-            margin-top: 25px;
+            margin-top: 20px;
             font-size: 12px;
             text-align: center;
             color: #888;
-        }
-        /* Forzar salto de página antes del listado de pedidos */
-        .page-break {
-            page-break-before: always; /* Salto de página */
         }
     </style>
 </head>
@@ -108,49 +108,45 @@
 
     <div class="metadata">
         <p><strong>Fecha de Generación:</strong> {{ date('d/m/Y H:i') }}</p>
-        <p><strong>Total de Registros:</strong> {{ count($pedidos) }} registros</p>
+        <p><strong>Total de Registros:</strong> {{ count($proveedores) }} registros</p>
     </div>
 
-    <div class="divider"></div>
+    <div class="page-break"></div>
 
-
-    <div class="page-break"></div> <!-- Salto de página -->
-     <h2 class="final-title">Listado de Pedidos</h2>
+    <div class="final-title">Listado de Proveedores</div>
 
     <table>
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Cliente</th>
-                <th>Empleado</th>
-                <th>Producto</th>
-                <th>Fecha Pedido</th>
-                <th>Fecha Entrega</th>
-                <th>Estado</th>
-                <th>Cantidad</th>
-                <th>Precio Unitario</th>
-                <th>Subtotal</th>
+                <th style="width:5%">ID</th>
+                <th style="width:15%">Persona</th>
+                <th style="width:15%">Empresa</th>
+                <th style="width:10%">RTN</th>
+                <th style="width:20%">Descripción</th>
+                <th style="width:10%">Sitio Web</th>
+                <th style="width:10%">Ubicación</th>
+                <th style="width:10%">Teléfono</th>
+                <th style="width:15%">Correo</th>
+                <th style="width:10%">Tipo</th>
+                <th style="width:10%">Registro</th>
+                <th style="width:10%">Estado</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($pedidos as $p)
+            @foreach($proveedores as $p)
                 <tr>
-                    <td>{{ $p->PedidoID }}</td>
-                    <td>{{ $p->cliente->NombreCliente ?? '—' }}</td>
-                    <td>
-                        @if($p->empleado && $p->empleado->persona)
-                            {{ $p->empleado->persona->Nombre }} {{ $p->empleado->persona->Apellido }}
-                        @else
-                            —
-                        @endif
-                    </td>
-                    <td>{{ $p->producto->NombreProducto ?? '—' }}</td>
-                    <td>{{ $p->FechaPedido }}</td>
-                    <td>{{ $p->FechaEntrega }}</td>
+                    <td>{{ $p->ProveedorID }}</td>
+                    <td>{{ $p->persona->NombreCompleto ?? '—' }}</td>
+                    <td>{{ $p->empresa->NombreEmpresa ?? '—' }}</td>
+                    <td>{{ $p->RTN }}</td>
+                    <td>{{ $p->Descripcion }}</td>
+                    <td>{{ $p->URL_Website }}</td>
+                    <td>{{ $p->Ubicacion }}</td>
+                    <td>{{ $p->Telefono }}</td>
+                    <td>{{ $p->CorreoElectronico }}</td>
+                    <td>{{ $p->TipoProveedor }}</td>
+                    <td>{{ $p->FechaRegistro }}</td>
                     <td>{{ $p->Estado }}</td>
-                    <td>{{ $p->Cantidad }}</td>
-                    <td>L {{ number_format($p->PrecioUnitario, 2) }}</td>
-                    <td>L {{ number_format($p->Subtotal, 2) }}</td>
                 </tr>
             @endforeach
         </tbody>

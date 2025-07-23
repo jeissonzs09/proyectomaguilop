@@ -25,7 +25,7 @@
     </a>
 
     {{-- Buscador reactivo con lupa --}}
-    <div class="relative max-w-xs w-full">
+<div class="relative max-w-xs w-full ml-auto"> <!-- Alinea el buscador a la derecha -->
         <input
             type="text"
             x-data="{ search: '{{ request('search') }}' }"
@@ -116,4 +116,3 @@
 </div>
     </div>
 </x-app-layout>
-
