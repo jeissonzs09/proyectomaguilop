@@ -10,6 +10,7 @@ use App\Models\Cliente;
 use App\Models\Empleado;
 use App\Models\Producto;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 class FacturaController extends Controller
 {
@@ -51,45 +52,60 @@ public function index(Request $request)
     public function create()
 {
     $clientes = Cliente::all();
-    $empleados = Empleado::with('persona')->get();
-    $productos = Producto::all();
 
-    return view('facturas.create', compact('clientes', 'empleados', 'productos'));
+    // Ya no necesitas enviar empleados, porque el empleado se obtiene desde el usuario logueado
+    $productos = Producto::select('ProductoID', 'NombreProducto', 'PrecioVenta')
+                         ->where('Estado', 'Activo') // si solo quieres activos
+                         ->get();
+
+    return view('facturas.create', compact('clientes', 'productos'));
 }
 
+
     public function store(Request $request)
-    {
-        $request->validate([
-            'ClienteID' => 'required|integer',
-            'EmpleadoID' => 'required|integer',
-            'Fecha' => 'required|date',
-            'Total' => 'required|numeric',
-            'detalles' => 'required|array|min:1',
-            'detalles.*.ProductoID' => 'required|integer',
-            'detalles.*.Cantidad' => 'required|integer|min:1',
-            'detalles.*.PrecioUnitario' => 'required|numeric|min:0',
-            'detalles.*.Subtotal' => 'required|numeric|min:0',
-        ]);
+{
+    $request->validate([
+        'ClienteID' => 'required|integer|exists:cliente,ClienteID',
+        'detalles' => 'required|array|min:1',
+        'detalles.*.ProductoID' => 'required|integer|exists:producto,ProductoID',
+        'detalles.*.Cantidad' => 'required|integer|min:1',
+        'detalles.*.PrecioUnitario' => 'required|numeric|min:0',
+    ]);
 
-        $factura = Factura::create([
-            'ClienteID' => $request->ClienteID,
-            'EmpleadoID' => $request->EmpleadoID,
-            'Fecha' => $request->Fecha,
-            'Total' => $request->Total,
-        ]);
+    // Obtener el EmpleadoID del usuario autenticado
+    $empleadoID = Auth::user()->EmpleadoID ?? null;
 
-        foreach ($request->detalles as $detalle) {
-            DetalleFactura::create([
-                'FacturaID' => $factura->FacturaID,
-                'ProductoID' => $detalle['ProductoID'],
-                'Cantidad' => $detalle['Cantidad'],
-                'PrecioUnitario' => $detalle['PrecioUnitario'],
-                'Subtotal' => $detalle['Subtotal'],
-            ]);
-        }
-
-        return redirect()->route('facturas.index')->with('success', 'Factura registrada correctamente.');
+    if (!$empleadoID) {
+        return back()->withErrors(['Empleado no asociado al usuario actual.']);
     }
+
+    // Calcular total
+    $total = 0;
+    foreach ($request->detalles as $detalle) {
+        $total += $detalle['Cantidad'] * $detalle['PrecioUnitario'];
+    }
+
+    // Crear factura
+    $factura = Factura::create([
+        'ClienteID' => $request->ClienteID,
+        'EmpleadoID' => $empleadoID,
+        'Fecha' => now(),
+        'Total' => $total,
+    ]);
+
+    // Crear detalles
+    foreach ($request->detalles as $detalle) {
+        DetalleFactura::create([
+            'FacturaID' => $factura->FacturaID,
+            'ProductoID' => $detalle['ProductoID'],
+            'Cantidad' => $detalle['Cantidad'],
+            'PrecioUnitario' => $detalle['PrecioUnitario'],
+            'Subtotal' => $detalle['Cantidad'] * $detalle['PrecioUnitario'],
+        ]);
+    }
+
+    return redirect()->route('facturas.index')->with('success', 'Factura registrada correctamente.');
+}
 
     public function edit($id)
 {
@@ -173,8 +189,8 @@ public function exportarPDF(Request $request)
                     ->orWhere('Apellido', 'LIKE', "%{$search}%")
               )
               ->orWhereHas('detalles.producto', fn($q) =>
-    $q->where('NombreProducto', 'LIKE', "%{$search}%")
-)
+                  $q->where('NombreProducto', 'LIKE', "%{$search}%")
+              )
               ->orWhereHas('detalles', fn($q) =>
                   $q->where('Cantidad', 'LIKE', "%{$search}%")
                     ->orWhere('PrecioUnitario', 'LIKE', "%{$search}%")
@@ -184,8 +200,33 @@ public function exportarPDF(Request $request)
 
     $facturas = $query->get();
 
-    $pdf = Pdf::loadView('facturas.pdf', compact('facturas'))->setPaper('a4', 'landscape');
+    // ✅ Carga del logo como Base64
+    $logoPath = public_path('images/logo-maguilop.png');
+    $logoBase64 = base64_encode(file_get_contents($logoPath));
+    $logoMime = mime_content_type($logoPath);
+    $logoSrc = "data:$logoMime;base64,$logoBase64";
+
+    // ✅ Envío del logo codificado a la vista
+    $pdf = Pdf::loadView('facturas.pdf', compact('facturas', 'logoSrc'))
+              ->setPaper('letter', 'portrait');
+
     return $pdf->download('facturas.pdf');
 }
+
+public function generarFacturaPDF($id)
+{
+    $factura = Factura::with(['cliente', 'empleado.persona', 'detalles.producto'])->findOrFail($id);
+
+    // Logo en base64
+    $logoPath = public_path('images/logo-maguilop.png');
+    $logoBase64 = base64_encode(file_get_contents($logoPath));
+    $logoMime = mime_content_type($logoPath);
+    $logoSrc = "data:$logoMime;base64,$logoBase64";
+
+    $pdf = PDF::loadView('facturas.pdf', compact('factura', 'logoSrc'))->setPaper('letter', 'portrait');
+    return $pdf->download('factura_' . $factura->FacturaID . '.pdf');
+}
+
+
 
 }
