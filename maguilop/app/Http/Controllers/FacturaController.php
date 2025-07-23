@@ -62,7 +62,7 @@ public function index(Request $request)
 }
 
 
-    public function store(Request $request)
+public function store(Request $request)
 {
     $request->validate([
         'ClienteID' => 'required|integer|exists:cliente,ClienteID',
@@ -79,6 +79,20 @@ public function index(Request $request)
         return back()->withErrors(['Empleado no asociado al usuario actual.']);
     }
 
+    // Validar stock disponible
+    foreach ($request->detalles as $detalle) {
+        $producto = \App\Models\Producto::find($detalle['ProductoID']);
+        if (!$producto) {
+            return back()->withErrors(["El producto con ID {$detalle['ProductoID']} no existe."]);
+        }
+
+        if ($producto->Stock < $detalle['Cantidad']) {
+            return back()->withErrors([
+                "El producto '{$producto->NombreProducto}' solo tiene {$producto->Stock} unidades disponibles."
+            ]);
+        }
+    }
+
     // Calcular total
     $total = 0;
     foreach ($request->detalles as $detalle) {
@@ -93,8 +107,9 @@ public function index(Request $request)
         'Total' => $total,
     ]);
 
-    // Crear detalles
+    // Crear detalles y descontar stock
     foreach ($request->detalles as $detalle) {
+        // Crear detalle
         DetalleFactura::create([
             'FacturaID' => $factura->FacturaID,
             'ProductoID' => $detalle['ProductoID'],
@@ -102,10 +117,16 @@ public function index(Request $request)
             'PrecioUnitario' => $detalle['PrecioUnitario'],
             'Subtotal' => $detalle['Cantidad'] * $detalle['PrecioUnitario'],
         ]);
+
+        // Descontar stock
+        $producto = \App\Models\Producto::find($detalle['ProductoID']);
+        $producto->Stock -= $detalle['Cantidad'];
+        $producto->save();
     }
 
     return redirect()->route('facturas.index')->with('success', 'Factura registrada correctamente.');
 }
+
 
     public function edit($id)
 {

@@ -65,7 +65,7 @@
             <th>DESCRIPCIÓN</th>
             <th style="width: 15%;">P. UNITARIO</th>
             <th style="width: 15%;">DESCUENTO</th>
-            <th style="width: 15%;">TOTAL</th>
+            <th style="width: 15%;">SUB TOTAL</th>
         </tr>
     </thead>
     <tbody>
