@@ -6,23 +6,28 @@ use Illuminate\Database\Eloquent\Model;
 
 class Empleado extends Model
 {
-    protected $table = 'empleado';
+    protected $table = 'empleado'; // o el nombre correcto de tu tabla
+
     protected $primaryKey = 'EmpleadoID';
-    public $timestamps = true;
 
     protected $fillable = [
         'PersonaID',
-        'Departamento',
+        'DepartamentoID',
         'Cargo',
         'FechaContratacion',
         'Salario',
     ];
 
-   public function persona()
+    public function persona()
     {
         return $this->belongsTo(Persona::class, 'PersonaID', 'PersonaID');
     }
 
-    
+
+public function departamento()
+{
+    return $this->belongsTo(Departamento::class, 'DepartamentoID', 'DepartamentoID');
+}
+
 
 }

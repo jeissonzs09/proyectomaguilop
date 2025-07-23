@@ -9,16 +9,27 @@ use App\Helpers\PermisosHelper;
 
 class EmpleadoController extends Controller
 {
-    public function index()
-    {
-        if (!PermisosHelper::tienePermiso('Empleados', 'ver')) {
-            abort(403, 'No tienes permiso para ver esta sección.');
-        }
+   public function index(Request $request)
+{
+    if (!PermisosHelper::tienePermiso('Empleados', 'ver')) {
+        abort(403, 'No tienes permiso para ver esta sección.');
+    }
 
-        $empleados = Empleado::with('persona')->get();
+    $search = $request->input('search');
+
+    $empleados = Empleado::with('persona')
+        ->when($search, function ($query, $search) {
+            $query->whereHas('persona', function ($q) use ($search) {
+                $q->where('Nombre', 'like', "%$search%")
+                  ->orWhere('Apellido', 'like', "%$search%");
+            });
+        })
+        ->orderBy('EmpleadoID', 'desc')
+        ->paginate(5); // ✅ Ahora es paginación, no Collection
 
     return view('empleados.index', compact('empleados'));
-    }
+}
+
 
 public function create()
 {

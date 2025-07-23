@@ -38,6 +38,7 @@
 
 
     {{-- Total Ventas --}}
+    <a href="{{ route('ventas.index') }}" class="block">
     <div class="bg-white p-4 rounded shadow text-center">
         <i class="bi bi-cash-coin text-3xl text-red-600"></i>
         <strong class="block mt-1">Total Ventas</strong>

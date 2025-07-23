@@ -43,6 +43,8 @@ Route::middleware(['auth'])->group(function () {
      Route::get('/compras/exportar-pdf', [CompraController::class, 'exportarPDF'])
      ->name('compras.exportarPDF');
      Route::get('proveedores/exportar-pdf', [ProveedorController::class, 'exportarPDF'])->name('proveedores.exportarPDF');
+     Route::get('empleados/exportar-pdf', [EmpleadoController::class, 'exportarPDF'])->name('empleados.exportarPDF');
+     Route::get('clientes/exportarPDF', [ClienteController::class, 'exportarPDF'])->name('clientes.exportarPDF');
 });
 
 

@@ -19,8 +19,11 @@ class Persona extends Model
     ];
 
     // Nombre completo (opcional)
-    public function getNombreCompletoAttribute()
-    {
-        return "{$this->Nombre} {$this->Apellido}";
-    }
+    // app/Models/Persona.php
+
+public function getNombreCompletoAttribute()
+{
+    return "{$this->Nombre} {$this->Apellido}";
+}
+
 }
